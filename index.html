@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de gastos gratis · Moneda Financiera</title>
+<meta name="description" content="Plantilla gratuita para controlar tus gastos del mes en Excel o Google Sheets. En español y sin registros raros.">
+<style>
+  :root {
+    --bg: #fffdf6; --ink: #2b2410; --muted: #6b6250; --gold: #c9a227; --gold-dark: #8a6d0f;
+    --card: #ffffff; --line: #ece3c6; --ok: #2e7d32;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17140c; --ink: #f4ecd4; --muted: #b8ad90; --card: #221d10; --line: #3a3220; --gold-dark: #e2c25a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 48px; }
+  .brand { font-weight: 700; color: var(--gold-dark); letter-spacing: .02em; font-size: 14px; text-transform: uppercase; }
+  h1 { font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 8px 0 12px; }
+  h2 { font-size: 22px; margin: 40px 0 12px; }
+  p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
+  .btn { display: inline-block; padding: 14px 22px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 2px solid var(--gold); cursor: pointer; font-size: 17px; }
+  .btn-primary { background: var(--gold); color: #1d1704; }
+  .btn-secondary { background: transparent; color: var(--ink); }
+  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin: 16px 0; }
+  ul.check { list-style: none; padding: 0; margin: 0; }
+  ul.check li { padding: 6px 0 6px 28px; position: relative; }
+  ul.check li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 700; }
+  .price { font-size: 28px; font-weight: 800; }
+  .tag { display: inline-block; font-size: 13px; background: var(--line); border-radius: 999px; padding: 2px 10px; margin-bottom: 8px; }
+  .small { font-size: 14px; color: var(--muted); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; font-size: 13px; color: var(--muted); }
+  footer a { color: var(--muted); }
+  #notice { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">Moneda Financiera</div>
+  <h1>¿A final de mes no sabes en qué se te fue el dinero?</h1>
+  <p class="lead">Descarga gratis la plantilla de <strong>control de gastos del mes</strong>: apuntas cada gasto en 10 segundos y ves al instante cuánto te queda y en qué categoría se te va más.</p>
+  <a class="btn btn-primary" data-link="free" href="#">Descargar la plantilla gratis</a>
+  <p class="small">Para Excel y Google Sheets. Solo te pedimos el email para enviártela.</p>
+
+  <div class="card">
+    <ul class="check">
+      <li>12 categorías pensadas para un hogar en España (puedes cambiarlas)</li>
+      <li>Calcula sola el total gastado, lo que te queda y el porcentaje por categoría</li>
+      <li>Gráfico automático de "¿en qué se va el dinero?"</li>
+      <li>Sin macros, sin apps y sin suscripciones</li>
+    </ul>
+  </div>
+
+  <h2>¿Quieres ir un paso más allá?</h2>
+  <div class="card">
+    <span class="tag">Próximamente</span>
+    <h3 style="margin:0 0 8px">Kit Presupuesto Familiar</h3>
+    <ul class="check">
+      <li>Resumen de los 12 meses: presupuesto frente a gasto real por categoría</li>
+      <li>Regla 50/30/20 con tus números reales</li>
+      <li>Calculadora de fondo de emergencia: cuánto necesitas y en cuántos meses llegas</li>
+      <li>Plan de deudas (bola de nieve o avalancha) con estimación de plazos e intereses</li>
+      <li>Metas de ahorro: cuánto apartar cada mes para llegar a tiempo</li>
+    </ul>
+    <p><span class="price">6,99 €</span> <span class="small">precio previsto de lanzamiento, pago único</span></p>
+    <a class="btn btn-secondary" data-link="waitlist" href="#">Avísame cuando salga</a>
+    <p class="small">No se cobra nada ahora. Solo te escribiremos cuando esté disponible.</p>
+  </div>
+  <div id="notice" role="status"></div>
+
+  <p class="small">Herramientas de organización personal. No son asesoramiento financiero, fiscal ni de inversión.</p>
+
+  <footer>
+    <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal en fase de prueba: esta página no vende ni cobra nada. Contacto: <a href="mailto:yanglei352008@gmail.com">yanglei352008@gmail.com</a>.</p>
+    <p><strong>Privacidad.</strong> El email que facilites lo recogen Payhip (descarga gratuita) y Google Forms (aviso de lanzamiento), con la única finalidad de enviarte la plantilla y, si lo pides, avisarte del lanzamiento del kit. Puedes darte de baja en cualquier momento y ejercer tus derechos de acceso, rectificación y supresión escribiendo a <a href="mailto:yanglei352008@gmail.com">yanglei352008@gmail.com</a>. Esta página no usa cookies propias.</p>
+  </footer>
+</main>
+<script>
+  // CONFIGURACIÓN: pega aquí los enlaces cuando existan (ver GUIA-PUESTA-EN-MARCHA.md).
+  const LINKS = {
+    free: "https://payhip.com/b/M4f5s",  // producto gratuito en Payhip (creado el 3 nov 2026, de momento invisible)
+    waitlist: "https://docs.google.com/forms/d/e/1FAIpQLSd1Jpdz6Q9r8DoY4tQnTAueGpIBC0Fbdh9_O4KFkO9MMJYbvw/viewform"  // Google Forms "Avísame"
+  };
+  const SOURCE = new URLSearchParams(location.search).get("utm_source") || "directo";
+
+  document.querySelectorAll("[data-link]").forEach(function (a) {
+    const url = LINKS[a.dataset.link];
+    if (url) {
+      const u = new URL(url);
+      u.searchParams.set("utm_source", SOURCE);
+      u.searchParams.set("utm_campaign", "validacion-kit");
+      a.href = u.toString();
+    } else {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        const n = document.getElementById("notice");
+        n.textContent = "Este enlace aún no está configurado. (Página en preparación.)";
+        n.style.display = "block";
+      });
+    }
+  });
+</script>
+</body>
+</html>
