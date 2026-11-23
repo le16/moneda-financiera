@@ -33,6 +33,12 @@
   .small { font-size: 14px; color: var(--muted); }
   footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; font-size: 13px; color: var(--muted); }
   footer a { color: var(--muted); }
+  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .tools .card { margin: 0; }
+  a.tool { display: block; color: var(--ink); text-decoration: none; }
+  a.tool:hover, a.tool:focus-visible { border-color: var(--gold); }
+  a.tool h3 { margin: 4px 0 6px; font-size: 18px; }
+  a.tool p { margin: 0; }
   #notice { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: var(--line); }
 </style>
 </head>
@@ -53,6 +59,30 @@
     </ul>
   </div>
 
+  <h2>Más herramientas gratis</h2>
+  <div class="tools">
+    <a class="card tool" href="coste-coche.html">
+      <span class="tag">Calculadora online</span>
+      <h3>¿Cuánto te cuesta de verdad tu coche?</h3>
+      <p class="small">Pérdida de valor, financiación, combustible, seguro, ITV, taller y aparcamiento: al mes, al día y por kilómetro.</p>
+    </a>
+    <a class="card tool" href="comparador-tae.html">
+      <span class="tag">Calculadora online</span>
+      <h3>Comparador de préstamos TIN/TAE</h3>
+      <p class="small">Compara hasta 3 ofertas: cuota, intereses, comisiones, coste total y la TAE real.</p>
+    </a>
+    <a class="card tool" href="descargas/Registro-de-suscripciones.xlsx" download data-dl="suscripciones">
+      <span class="tag">Excel · Google Sheets</span>
+      <h3>Registro de suscripciones</h3>
+      <p class="small">Todo lo que pagas cada mes, cuánto suma al año, cuándo se renueva cada una y cuáles sobran.</p>
+    </a>
+    <a class="card tool" href="descargas/Planificador-Renta.xlsx" download data-dl="renta">
+      <span class="tag">Excel · Google Sheets</span>
+      <h3>Planificador de la Renta</h3>
+      <p class="small">Fechas clave, lista de documentos, pasos en orden y cálculo del pago en dos plazos.</p>
+    </a>
+  </div>
+
   <h2>¿Quieres ir un paso más allá?</h2>
   <div class="card">
     <span class="tag">Próximamente</span>
@@ -70,7 +100,7 @@
   </div>
   <div id="notice" role="status"></div>
 
-  <p class="small">Herramientas de organización personal. No son asesoramiento financiero, fiscal ni de inversión.</p>
+  <p class="small">Las calculadoras funcionan en tu navegador: tus datos no se envían a ningún sitio. Herramientas de organización personal. No son asesoramiento financiero, fiscal ni de inversión.</p>
 
   <footer>
     <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal en fase de prueba: esta página no vende ni cobra nada. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
@@ -84,6 +114,11 @@
     waitlist: "https://docs.google.com/forms/d/e/1FAIpQLSd1Jpdz6Q9r8DoY4tQnTAueGpIBC0Fbdh9_O4KFkO9MMJYbvw/viewform"  // Google Forms "Avísame"
   };
   const SOURCE = new URLSearchParams(location.search).get("utm_source") || "directo";
+
+  // Las calculadoras heredan el origen de la visita para medir de dónde llegan las descargas.
+  document.querySelectorAll('a.tool[href$=".html"]').forEach(function (a) {
+    a.href = a.getAttribute("href") + "?utm_source=" + encodeURIComponent(SOURCE);
+  });
 
   document.querySelectorAll("[data-link]").forEach(function (a) {
     const url = LINKS[a.dataset.link];

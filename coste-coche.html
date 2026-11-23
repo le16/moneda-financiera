@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coste real del coche · Moneda Financiera</title>
+<meta name="description" content="Calculadora gratuita: cuánto te cuesta de verdad tu coche al año, al mes, al día y por kilómetro. Pérdida de valor, financiación, combustible, seguro, ITV, impuestos, mantenimiento y aparcamiento.">
+<style>
+  :root {
+    --bg: #fffdf6; --ink: #2b2410; --muted: #6b6250; --gold: #c9a227; --gold-dark: #8a6d0f;
+    --card: #ffffff; --line: #ece3c6; --ok: #2e7d32; --bad: #b3261e; --soft: #f7f0da;
+    --c1: #c9a227; --c2: #2f6f8f; --c3: #7a5c99; --c4: #3f8f5a; --c5: #b5623a; --c6: #8a8170;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #17140c; --ink: #f4ecd4; --muted: #b8ad90; --card: #221d10; --line: #3a3220; --gold-dark: #e2c25a; --soft: #2a2414; --ok: #6cc070; --bad: #ef8a80; --c2: #5aa6c8; --c3: #a98bc9; --c4: #6cc08a; --c5: #e08a5e; --c6: #a99f8a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 28px 16px 48px; }
+  a { color: var(--gold-dark); }
+  .brand { font-weight: 700; color: var(--gold-dark); letter-spacing: .02em; font-size: 14px; text-transform: uppercase; text-decoration: none; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 8px 0 10px; }
+  h2 { font-size: 19px; margin: 0 0 4px; }
+  h3 { font-size: 16px; margin: 18px 0 6px; }
+  p.lead { font-size: 18px; color: var(--muted); margin: 0 0 20px; max-width: 760px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+  .results { position: sticky; top: 12px; }
+  @media (max-width: 900px) { .results { position: static; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 0 0 16px; }
+  .card .hint { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  @media (max-width: 560px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  label { display: block; font-size: 14px; font-weight: 600; }
+  label small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+  .field { position: relative; margin-top: 4px; }
+  input, select { width: 100%; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; }
+  input:focus, select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .field .unit { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+  .field input { padding-right: 58px; }
+  .toggle { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; cursor: pointer; }
+  .toggle input { width: 18px; height: 18px; }
+  .big { font-size: 40px; font-weight: 800; line-height: 1.1; margin: 4px 0; }
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+  .kpi { background: var(--soft); border-radius: 10px; padding: 10px; text-align: center; }
+  .kpi b { display: block; font-size: 19px; }
+  .kpi span { font-size: 12.5px; color: var(--muted); }
+  .bars { margin: 10px 0 0; }
+  .bar { display: grid; grid-template-columns: 128px minmax(0, 1fr) 72px; gap: 8px; align-items: center; font-size: 14px; margin: 6px 0; }
+  .bar .track { background: var(--soft); border-radius: 6px; height: 14px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 6px; }
+  .bar .v { text-align: right; font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  tfoot td { font-weight: 800; border-bottom: 0; }
+  .note { font-size: 13.5px; color: var(--muted); }
+  .pill { display: inline-block; font-size: 12.5px; padding: 2px 9px; border-radius: 999px; background: var(--soft); }
+  .good { color: var(--ok); font-weight: 700; } .badc { color: var(--bad); font-weight: 700; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 2px solid var(--gold); cursor: pointer; font: inherit; font-weight: 700; background: transparent; color: var(--ink); }
+  .btn-primary { background: var(--gold); color: #1d1704; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-weight: 600; }
+  .ref { font-size: 13px; color: var(--muted); }
+  .ref li { margin: 3px 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 16px; font-size: 13px; color: var(--muted); }
+  footer a { color: var(--muted); }
+  @media print {
+    .no-print, form .btns { display: none !important; }
+    .layout { grid-template-columns: 1fr; }
+    .results { position: static; }
+    body { background: #fff; color: #000; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="./">Moneda Financiera</a>
+  <h1>¿Cuánto te cuesta <em>de verdad</em> tu coche?</h1>
+  <p class="lead">No es solo la gasolina. Suma la pérdida de valor, la financiación, el seguro, la ITV, los impuestos, el taller y el aparcamiento, y mira el resultado al año, al mes, al día y por kilómetro.</p>
+
+  <div class="layout">
+    <form id="f" autocomplete="off" onsubmit="return false">
+
+      <div class="card">
+        <h2>1. El coche y la pérdida de valor</h2>
+        <p class="hint">Suele ser el gasto más grande y el que nadie ve: lo que vale menos el coche cada año.</p>
+        <div class="grid">
+          <label>Precio del coche
+            <small>Lo que pagaste, o lo que vale hoy si ya lo tienes</small>
+            <div class="field"><input id="precio" type="number" min="0" step="100" value="20000"><span class="unit">€</span></div></label>
+          <label>Valor al venderlo
+            <small>Lo que crees que te darán al final</small>
+            <div class="field"><input id="venta" type="number" min="0" step="100" value="9000"><span class="unit">€</span></div></label>
+          <label>Años que lo vas a tener
+            <div class="field"><input id="anos" type="number" min="1" max="30" step="1" value="6"><span class="unit">años</span></div></label>
+          <label>Antigüedad actual del coche
+            <small>0 si es nuevo (sirve para calcular las ITV)</small>
+            <div class="field"><input id="edad" type="number" min="0" max="40" step="1" value="0"><span class="unit">años</span></div></label>
+        </div>
+        <p class="note" id="depHint"></p>
+      </div>
+
+      <div class="card">
+        <h2>2. Financiación</h2>
+        <label class="toggle"><input id="fin" type="checkbox"> Lo pago (o lo pagué) con un préstamo</label>
+        <div id="finBox" hidden>
+          <p class="hint" style="margin-top:10px">Solo se suma el <b>sobrecoste</b>: intereses y comisiones. El capital ya está contado en el precio del coche.</p>
+          <div class="grid">
+            <label>Importe financiado
+              <div class="field"><input id="finImp" type="number" min="0" step="100" value="15000"><span class="unit">€</span></div></label>
+            <label>TIN del préstamo
+              <div class="field"><input id="finTin" type="number" min="0" step="0.01" value="7.5"><span class="unit">%</span></div></label>
+            <label>Plazo
+              <div class="field"><input id="finPlazo" type="number" min="1" step="1" value="60"><span class="unit">meses</span></div></label>
+            <label>Comisión de apertura
+              <div class="field"><input id="finCom" type="number" min="0" step="0.1" value="2"><span class="unit">%</span></div></label>
+            <label>Seguro u otros productos vinculados
+              <small>Si te obligan a contratarlos para darte el préstamo</small>
+              <div class="field"><input id="finSeg" type="number" min="0" step="1" value="0"><span class="unit">€/mes</span></div></label>
+          </div>
+          <p class="note" id="finHint"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. Combustible o electricidad</h2>
+        <div class="grid">
+          <label>Tipo de motor
+            <div class="field"><select id="motor">
+              <option value="gasolina">Gasolina</option>
+              <option value="diesel">Diésel</option>
+              <option value="hibrido">Híbrido</option>
+              <option value="electrico">Eléctrico</option>
+            </select></div></label>
+          <label>Kilómetros al año
+            <div class="field"><input id="km" type="number" min="0" step="500" value="12000"><span class="unit">km</span></div></label>
+          <label><span id="consLbl">Consumo real</span>
+            <small id="consSmall">Mira el ordenador de a bordo, no el del catálogo</small>
+            <div class="field"><input id="cons" type="number" min="0" step="0.1" value="6.5"><span class="unit" id="consUnit">l/100 km</span></div></label>
+          <label><span id="pcLbl">Precio del litro</span>
+            <small>Ejemplo: pon el de tu gasolinera o tu tarifa</small>
+            <div class="field"><input id="pc" type="number" min="0" step="0.01" value="1.55"><span class="unit" id="pcUnit">€/l</span></div></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>4. Gastos fijos del año</h2>
+        <div class="grid">
+          <label>Seguro
+            <small>Terceros, terceros ampliado o todo riesgo</small>
+            <div class="field"><input id="seguro" type="number" min="0" step="10" value="450"><span class="unit">€/año</span></div></label>
+          <label>Impuesto de circulación (IVTM)
+            <small>Lo cobra tu ayuntamiento</small>
+            <div class="field"><input id="ivtm" type="number" min="0" step="5" value="100"><span class="unit">€/año</span></div></label>
+          <label>Precio de la ITV
+            <small>Se calcula cuántas te tocan con la antigüedad</small>
+            <div class="field"><input id="itv" type="number" min="0" step="1" value="45"><span class="unit">€</span></div></label>
+          <label>Plaza de garaje o aparcamiento
+            <small>Alquiler, zona azul, parking del trabajo…</small>
+            <div class="field"><input id="parking" type="number" min="0" step="5" value="0"><span class="unit">€/mes</span></div></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>5. Taller y desgaste</h2>
+        <div class="grid">
+          <label>Revisiones y mantenimiento
+            <small>Aceite, filtros, frenos, etc.</small>
+            <div class="field"><input id="mant" type="number" min="0" step="10" value="300"><span class="unit">€/año</span></div></label>
+          <label>Juego de 4 neumáticos
+            <div class="field"><input id="neuP" type="number" min="0" step="10" value="400"><span class="unit">€</span></div></label>
+          <label>Duración de los neumáticos
+            <div class="field"><input id="neuKm" type="number" min="1000" step="1000" value="40000"><span class="unit">km</span></div></label>
+          <label>Averías e imprevistos
+            <small>Una reserva para lo que no esperas</small>
+            <div class="field"><input id="imprev" type="number" min="0" step="10" value="150"><span class="unit">€/año</span></div></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>6. Otros gastos</h2>
+        <div class="grid">
+          <label>Peajes
+            <div class="field"><input id="peajes" type="number" min="0" step="5" value="0"><span class="unit">€/mes</span></div></label>
+          <label>Lavados
+            <div class="field"><input id="lavado" type="number" min="0" step="5" value="60"><span class="unit">€/año</span></div></label>
+          <label>Multas, accesorios y otros
+            <div class="field"><input id="otros" type="number" min="0" step="5" value="0"><span class="unit">€/año</span></div></label>
+          <label>Tu sueldo neto al mes
+            <small>Opcional: para ver qué parte se lleva el coche</small>
+            <div class="field"><input id="sueldo" type="number" min="0" step="50" placeholder="Ej. 1500"><span class="unit">€/mes</span></div></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>7. ¿Y sin coche?</h2>
+        <p class="hint">Opcional. Lo que gastarías en moverte si no lo tuvieras, para comparar.</p>
+        <div class="grid">
+          <label>Transporte público
+            <small>Abono o billetes</small>
+            <div class="field"><input id="altBus" type="number" min="0" step="1" value="0"><span class="unit">€/mes</span></div></label>
+          <label>Taxi, VTC o coche compartido
+            <div class="field"><input id="altTaxi" type="number" min="0" step="5" value="0"><span class="unit">€/mes</span></div></label>
+          <label>Días de coche de alquiler
+            <small>Vacaciones, mudanzas…</small>
+            <div class="field"><input id="altDias" type="number" min="0" step="1" value="0"><span class="unit">días/año</span></div></label>
+          <label>Precio por día de alquiler
+            <div class="field"><input id="altDia" type="number" min="0" step="1" value="45"><span class="unit">€/día</span></div></label>
+        </div>
+      </div>
+
+      <div class="btns no-print">
+        <button class="btn" type="button" id="reset">Volver a los valores de ejemplo</button>
+      </div>
+    </form>
+
+    <aside class="results" aria-live="polite">
+      <div class="card">
+        <span class="pill">Tu resultado</span>
+        <div class="big" id="rMes">—</div>
+        <div class="note">al mes, de media, mientras tengas el coche</div>
+        <div class="kpis">
+          <div class="kpi"><b id="rAno">—</b><span>al año</span></div>
+          <div class="kpi"><b id="rDia">—</b><span>al día</span></div>
+          <div class="kpi"><b id="rKm">—</b><span>por km</span></div>
+        </div>
+        <p class="note" id="rTotal"></p>
+        <p class="note" id="rSueldo"></p>
+        <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="card">
+        <h2>Desglose</h2>
+        <table>
+          <thead><tr><th>Concepto</th><th>Al año</th><th>Al mes</th><th>%</th></tr></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot><tr><td>Total</td><td id="tA">—</td><td id="tM">—</td><td>100 %</td></tr></tfoot>
+        </table>
+        <p class="note" id="fijVar"></p>
+        <p class="note" id="caja"></p>
+      </div>
+
+      <div class="card" id="altCard" hidden>
+        <h2>Coche frente a moverte sin él</h2>
+        <p id="altTxt"></p>
+      </div>
+
+      <div class="card">
+        <h2>¿Es mucho o poco?</h2>
+        <p class="note" id="refTxt"></p>
+        <ul class="ref">
+          <li>RACE (mayo 2026): un coche de combustión con unos 15.000 km al año cuesta entre <b>2.000 y 3.500 € al año</b> (170–290 €/mes) en seguro, combustible, impuestos y mantenimiento, <b>sin contar la pérdida de valor ni la financiación</b>. <a href="https://www.race.es/cuanto-cuesta-mantener-coche" target="_blank" rel="noopener">Fuente</a></li>
+          <li>Carwow (datos de marzo 2026): la pérdida de valor media es del <b>9,28 % al año</b>, unos 2.737 € para un coche de precio medio. <a href="https://www.carwow.es/editorial/contenido-carwow/estudios-mercado-investigacion-coches/coste-coche-parado-espana-depreciacion" target="_blank" rel="noopener">Fuente</a></li>
+        </ul>
+        <div class="btns no-print">
+          <button class="btn" type="button" onclick="window.print()">Imprimir o guardar en PDF</button>
+          <button class="btn" type="button" id="csv">Descargar tabla (CSV)</button>
+        </div>
+      </div>
+
+      <div class="card no-print">
+        <h2>Ahora controla el resto de tus gastos</h2>
+        <p class="note">Plantilla gratis de control de gastos del mes, para Excel y Google Sheets.</p>
+        <a class="btn btn-primary" id="freeLink" href="https://payhip.com/b/M4f5s">Descargar la plantilla gratis</a>
+      </div>
+    </aside>
+  </div>
+
+  <div class="card" style="margin-top:8px">
+    <h2>Cómo se calcula</h2>
+    <details>
+      <summary>Ver las fórmulas</summary>
+      <ul class="note">
+        <li><b>Pérdida de valor al año</b> = (precio del coche − valor al venderlo) ÷ años que lo tienes.</li>
+        <li><b>Financiación</b>: cuota con sistema francés (cuota fija), cuota = C · i ÷ (1 − (1 + i)<sup>−n</sup>), con i = TIN ÷ 12. Sobrecoste = intereses + comisión de apertura + productos vinculados durante el préstamo, repartido entre los años que tienes el coche. El capital no se suma: ya está en el precio.</li>
+        <li><b>Combustible</b> = km al año ÷ 100 × consumo × precio.</li>
+        <li><b>ITV</b>: los turismos no pasan ITV los 4 primeros años; después, cada 2 años hasta los 10, y cada año a partir de ahí. Se cuentan las que te tocan en los años que tienes el coche y se reparten por año.</li>
+        <li><b>Neumáticos</b> = precio del juego ÷ km que duran × km al año.</li>
+        <li><b>Por km</b> = coste total al año ÷ km al año. <b>Al día</b> = coste al año ÷ 365.</li>
+      </ul>
+    </details>
+  </div>
+
+  <p class="note">Los valores que aparecen al abrir la página son un ejemplo: cámbialos por los tuyos. El resultado es una estimación para organizarte, no asesoramiento financiero. Tus datos no salen de tu navegador.</p>
+
+  <footer>
+    <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal. Esta página no vende ni cobra nada. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
+    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos que escribes solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio. Esta página no usa cookies.</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "mf-coste-coche-v1";
+  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var pct1 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1 });
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("f");
+  var inputs = Array.prototype.slice.call(form.querySelectorAll("input, select"));
+  var defaults = {};
+  inputs.forEach(function (el) { defaults[el.id] = el.type === "checkbox" ? el.checked : el.value; });
+
+  var MOTOR = {
+    gasolina: { cons: 6.5, pc: 1.55, cu: "l/100 km", pu: "€/l", cl: "Consumo real", pl: "Precio del litro" },
+    diesel: { cons: 5.5, pc: 1.45, cu: "l/100 km", pu: "€/l", cl: "Consumo real", pl: "Precio del litro" },
+    hibrido: { cons: 4.8, pc: 1.55, cu: "l/100 km", pu: "€/l", cl: "Consumo real", pl: "Precio del litro" },
+    electrico: { cons: 16, pc: 0.20, cu: "kWh/100 km", pu: "€/kWh", cl: "Consumo real", pl: "Precio del kWh (media casa y calle)" }
+  };
+
+  function n(id) { var v = parseFloat(String($(id).value).replace(",", ".")); return isFinite(v) && v > 0 ? v : 0; }
+
+  function cuota(C, tinAnual, meses) {
+    if (meses <= 0 || C <= 0) return 0;
+    var i = tinAnual / 100 / 12;
+    if (i === 0) return C / meses;
+    return C * i / (1 - Math.pow(1 + i, -meses));
+  }
+
+  function itvCount(edad, anos) {
+    // ITV a los 4, 6, 8 y 10 años; después, cada año.
+    var c = 0;
+    for (var t = Math.floor(edad) + 1; t <= Math.floor(edad) + anos; t++) {
+      if (t >= 4 && t <= 10 && t % 2 === 0) c++;
+      else if (t > 10) c++;
+    }
+    return c;
+  }
+
+  function applyMotorLabels() {
+    var m = MOTOR[$("motor").value];
+    $("consUnit").textContent = m.cu; $("pcUnit").textContent = m.pu;
+    $("consLbl").textContent = m.cl; $("pcLbl").textContent = m.pl;
+  }
+
+  function calc() {
+    $("finBox").hidden = !$("fin").checked;
+    var anos = Math.max(1, Math.round(n("anos")) || 1);
+    var km = n("km");
+
+    var dep = Math.max(0, n("precio") - n("venta")) / anos;
+    var depPct = n("precio") > 0 ? (1 - Math.pow(Math.min(n("venta"), n("precio")) / n("precio"), 1 / anos)) * 100 : 0;
+    $("depHint").textContent = n("precio") > 0 && n("venta") > 0
+      ? "Pierde " + eur0.format(dep) + " al año, un " + pct1.format(depPct) + " % anual de media."
+      : "";
+
+    var finAnual = 0, finTxt = "", cuotaMes = 0, plazo = 0;
+    if ($("fin").checked) {
+      var C = n("finImp"); plazo = Math.round(n("finPlazo"));
+      cuotaMes = cuota(C, n("finTin"), plazo);
+      var intereses = cuotaMes * plazo - C;
+      var comision = C * n("finCom") / 100;
+      var vinculados = n("finSeg") * plazo;
+      var sobre = intereses + comision + vinculados;
+      finAnual = sobre / anos;
+      finTxt = "Cuota: " + eur2.format(cuotaMes) + "/mes durante " + plazo + " meses. Intereses: " + eur0.format(intereses) +
+        ", comisión: " + eur0.format(comision) + (vinculados ? ", productos vinculados: " + eur0.format(vinculados) : "") +
+        ". Sobrecoste total: " + eur0.format(sobre) + ".";
+      if (plazo > anos * 12) finTxt += " Ojo: el préstamo dura más que el tiempo que tendrás el coche; al venderlo tendrías que cancelar lo que quede.";
+    }
+    $("finHint").textContent = finTxt;
+
+    var combustible = km / 100 * n("cons") * n("pc");
+    var nItv = itvCount(n("edad"), anos);
+    var itv = nItv * n("itv") / anos;
+    var neum = n("neuKm") > 0 ? n("neuP") / n("neuKm") * km : 0;
+
+    var items = [
+      { k: "Pérdida de valor", v: dep, c: "var(--c1)", fijo: true },
+      { k: "Financiación", v: finAnual, c: "var(--c6)", fijo: true },
+      { k: $("motor").value === "electrico" ? "Electricidad" : "Combustible", v: combustible, c: "var(--c2)", fijo: false },
+      { k: "Seguro", v: n("seguro"), c: "var(--c3)", fijo: true },
+      { k: "Impuesto (IVTM)", v: n("ivtm"), c: "var(--c3)", fijo: true },
+      { k: "ITV", v: itv, c: "var(--c3)", fijo: true },
+      { k: "Aparcamiento", v: n("parking") * 12, c: "var(--c5)", fijo: true },
+      { k: "Mantenimiento", v: n("mant"), c: "var(--c4)", fijo: false },
+      { k: "Neumáticos", v: neum, c: "var(--c4)", fijo: false },
+      { k: "Imprevistos", v: n("imprev"), c: "var(--c4)", fijo: false },
+      { k: "Peajes", v: n("peajes") * 12, c: "var(--c5)", fijo: false },
+      { k: "Lavados", v: n("lavado"), c: "var(--c5)", fijo: false },
+      { k: "Otros", v: n("otros"), c: "var(--c6)", fijo: false }
+    ];
+    var total = items.reduce(function (s, it) { return s + it.v; }, 0);
+
+    $("rMes").textContent = eur0.format(total / 12);
+    $("rAno").textContent = eur0.format(total);
+    $("rDia").textContent = eur2.format(total / 365);
+    $("rKm").textContent = km > 0 ? eur2.format(total / km) : "—";
+    $("rTotal").textContent = "En los " + anos + " años que lo tienes: " + eur0.format(total * anos) + " en total." +
+      (nItv ? " Incluye " + nItv + " ITV." : " En ese periodo no te toca ninguna ITV.");
+
+    var s = n("sueldo");
+    $("rSueldo").innerHTML = s > 0
+      ? "Se lleva el <b>" + pct1.format(total / 12 / s * 100) + " %</b> de tu sueldo neto: equivale a <b>" + pct1.format(total / s) + " meses de sueldo</b> al año."
+      : "";
+
+    var shown = items.filter(function (it) { return it.v > 0.5; }).sort(function (a, b) { return b.v - a.v; });
+    var max = shown.length ? shown[0].v : 1;
+    $("bars").innerHTML = shown.map(function (it) {
+      return '<div class="bar"><span>' + it.k + '</span><div class="track"><div class="fill" style="width:' +
+        (it.v / max * 100).toFixed(1) + '%;background:' + it.c + '"></div></div><span class="v">' + eur0.format(it.v / 12) + '/mes</span></div>';
+    }).join("");
+
+    $("tbody").innerHTML = shown.map(function (it) {
+      return "<tr><td>" + it.k + "</td><td>" + eur0.format(it.v) + "</td><td>" + eur0.format(it.v / 12) + "</td><td>" +
+        (total > 0 ? pct1.format(it.v / total * 100) : "0") + " %</td></tr>";
+    }).join("");
+    $("tA").textContent = eur0.format(total); $("tM").textContent = eur0.format(total / 12);
+
+    var fijos = items.filter(function (it) { return it.fijo; }).reduce(function (a, it) { return a + it.v; }, 0);
+    $("fijVar").textContent = "Gastos fijos (los pagas aunque no lo muevas): " + eur0.format(fijos) + " al año (" +
+      (total > 0 ? pct1.format(fijos / total * 100) : 0) + " %). Gastos que dependen de los km: " + eur0.format(total - fijos) + ".";
+
+    var sinDep = total - dep - finAnual;
+    $("caja").textContent = $("fin").checked && cuotaMes > 0
+      ? "Lo que sale de tu cuenta cada mes mientras pagas el préstamo: unos " + eur0.format(sinDep / 12 + cuotaMes + n("finSeg")) +
+        " (gastos de uso + cuota). Terminado el préstamo: unos " + eur0.format(sinDep / 12) + "."
+      : "Lo que sale de tu cuenta cada mes (sin contar la pérdida de valor, que pagas al comprar y al vender): unos " + eur0.format(sinDep / 12) + ".";
+
+    var alt = n("altBus") * 12 + n("altTaxi") * 12 + n("altDias") * n("altDia");
+    $("altCard").hidden = alt <= 0;
+    if (alt > 0) {
+      var diff = total - alt;
+      $("altTxt").innerHTML = "Sin coche gastarías unos <b>" + eur0.format(alt) + " al año</b> (" + eur0.format(alt / 12) + "/mes). " +
+        (diff > 0
+          ? 'El coche te cuesta <span class="badc">' + eur0.format(diff) + " más al año</span> (" + eur0.format(diff / 12) + "/mes)."
+          : 'El coche te sale <span class="good">' + eur0.format(-diff) + " más barato al año</span>.") +
+        " <span class=\"note\">Compara también el tiempo y la comodidad: no todo es dinero.</span>";
+    }
+
+    var sinDepYFin = total - dep - finAnual - n("parking") * 12 - n("peajes") * 12;
+    $("refTxt").innerHTML = "Tus gastos comparables con el RACE (sin pérdida de valor, financiación, aparcamiento ni peajes): <b>" +
+      eur0.format(sinDepYFin) + " al año</b>" + (km ? " con " + new Intl.NumberFormat("es-ES").format(km) + " km." : ".");
+
+    window.__rows = shown.map(function (it) { return [it.k, it.v, it.v / 12, total > 0 ? it.v / total * 100 : 0]; });
+    window.__total = total;
+    save();
+  }
+
+  function save() {
+    try {
+      var o = {}; inputs.forEach(function (el) { o[el.id] = el.type === "checkbox" ? el.checked : el.value; });
+      localStorage.setItem(KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+  function load() {
+    try {
+      var o = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (!o) return;
+      inputs.forEach(function (el) { if (o[el.id] !== undefined) { if (el.type === "checkbox") el.checked = !!o[el.id]; else el.value = o[el.id]; } });
+    } catch (e) {}
+  }
+
+  $("motor").addEventListener("change", function () {
+    var m = MOTOR[this.value]; $("cons").value = m.cons; $("pc").value = m.pc; applyMotorLabels(); calc();
+  });
+  form.addEventListener("input", calc);
+  form.addEventListener("change", calc);
+  $("reset").addEventListener("click", function () {
+    inputs.forEach(function (el) { if (el.type === "checkbox") el.checked = defaults[el.id]; else el.value = defaults[el.id]; });
+    applyMotorLabels(); calc();
+  });
+  $("csv").addEventListener("click", function () {
+    var f = function (x) { return x.toFixed(2).replace(".", ","); };
+    var lines = ["Concepto;Al año (€);Al mes (€);%"].concat((window.__rows || []).map(function (r) {
+      return r[0] + ";" + f(r[1]) + ";" + f(r[2]) + ";" + f(r[3]);
+    }));
+    lines.push("Total;" + f(window.__total || 0) + ";" + f((window.__total || 0) / 12) + ";100");
+    var blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "coste-coche.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  var src = new URLSearchParams(location.search).get("utm_source") || "directo";
+  var fl = new URL($("freeLink").href); fl.searchParams.set("utm_source", src); fl.searchParams.set("utm_campaign", "calc-coche");
+  $("freeLink").href = fl.toString();
+
+  load(); applyMotorLabels(); calc();
+})();
+</script>
+</body>
+</html>

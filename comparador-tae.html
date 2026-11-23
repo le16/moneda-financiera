@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparador TIN y TAE · Moneda Financiera</title>
+<meta name="description" content="Compara hasta 3 préstamos o compras a plazos: cuota, intereses, comisiones, coste total y TAE real calculada. Gratis y sin registros.">
+<style>
+  :root {
+    --bg: #fffdf6; --ink: #2b2410; --muted: #6b6250; --gold: #c9a227; --gold-dark: #8a6d0f;
+    --card: #ffffff; --line: #ece3c6; --ok: #2e7d32; --bad: #b3261e; --soft: #f7f0da;
+    --cap: #c9a227; --int: #2f6f8f; --com: #b5623a; --vin: #7a5c99;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #17140c; --ink: #f4ecd4; --muted: #b8ad90; --card: #221d10; --line: #3a3220; --gold-dark: #e2c25a; --soft: #2a2414; --ok: #6cc070; --bad: #ef8a80; --int: #5aa6c8; --com: #e08a5e; --vin: #a98bc9; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 28px 16px 48px; }
+  a { color: var(--gold-dark); }
+  .brand { font-weight: 700; color: var(--gold-dark); letter-spacing: .02em; font-size: 14px; text-transform: uppercase; text-decoration: none; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 8px 0 10px; }
+  h2 { font-size: 19px; margin: 0 0 8px; }
+  p.lead { font-size: 18px; color: var(--muted); margin: 0 0 20px; max-width: 780px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 0 0 16px; }
+  .offers { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+  .offer { border-top: 6px solid var(--oc); }
+  .offer-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .offer-head input { font-weight: 700; font-size: 17px; }
+  .x { border: 0; background: transparent; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px 8px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin-top: 10px; }
+  label small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; }
+  .row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .field { position: relative; margin-top: 4px; }
+  input, select { width: 100%; padding: 9px 11px; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; }
+  input:focus, select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .field .unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+  .field input { padding-right: 52px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 10px; text-decoration: none; border: 2px solid var(--gold); cursor: pointer; font: inherit; font-weight: 700; background: transparent; color: var(--ink); }
+  .btn-primary { background: var(--gold); color: #1d1704; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; white-space: normal; }
+  thead th { font-size: 14px; }
+  tr.key td { font-weight: 800; }
+  .win { color: var(--ok); font-weight: 800; }
+  .warn { color: var(--bad); font-weight: 700; }
+  .note { font-size: 13.5px; color: var(--muted); }
+  .verdict { font-size: 18px; margin: 0 0 12px; }
+  .stack { margin: 14px 0 4px; }
+  .srow { display: grid; grid-template-columns: 110px minmax(0, 1fr) 90px; gap: 8px; align-items: center; margin: 8px 0; font-size: 14px; }
+  .strack { display: flex; height: 18px; border-radius: 6px; overflow: hidden; background: var(--soft); }
+  .strack span { height: 100%; }
+  .srow .v { text-align: right; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--oc); margin-right: 6px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; font-weight: 600; }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 10px; }
+  .tools label { margin: 0; min-width: 160px; }
+  footer { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 16px; font-size: 13px; color: var(--muted); }
+  footer a { color: var(--muted); }
+  @media print { .no-print { display: none !important; } body { background: #fff; color: #000; } }
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="./">Moneda Financiera</a>
+  <h1>Comparador de préstamos: TIN, TAE y lo que pagas de verdad</h1>
+  <p class="lead">Mete hasta 3 ofertas (préstamo personal, financiación del coche, compra a plazos…) y mira la cuota, los intereses, las comisiones, el coste total y la <b>TAE real</b> calculada con todos los gastos.</p>
+
+  <div class="btns no-print">
+    <button class="btn" type="button" id="add">+ Añadir oferta</button>
+    <button class="btn" type="button" id="ej0">Ejemplo: compra «al 0 %» con comisión</button>
+    <button class="btn" type="button" id="ejPlazo">Ejemplo: cuota baja, plazo largo</button>
+    <button class="btn" type="button" id="reset">Empezar de nuevo</button>
+  </div>
+
+  <div class="offers" id="offers"></div>
+
+  <div class="card" aria-live="polite">
+    <h2>Resultado</h2>
+    <p class="verdict" id="verdict"></p>
+    <div class="scroll"><table id="cmp"></table></div>
+    <div class="stack" id="stack"></div>
+    <div class="legend">
+      <span><i style="background:var(--cap)"></i>Lo que te prestan</span>
+      <span><i style="background:var(--int)"></i>Intereses</span>
+      <span><i style="background:var(--com)"></i>Comisiones y gastos iniciales</span>
+      <span><i style="background:var(--vin)"></i>Seguros y productos vinculados</span>
+    </div>
+    <p class="note" id="warns"></p>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>¿Y si cambio el plazo?</h2>
+      <div class="tools no-print"><label>Oferta<div class="field"><select id="plazoSel"></select></div></label></div>
+      <div class="scroll"><table id="plazoTbl"></table></div>
+      <p class="note">Alargar el plazo baja la cuota, pero casi siempre sube lo que pagas en total.</p>
+    </div>
+
+    <div class="card">
+      <h2>Cuadro de amortización</h2>
+      <div class="tools no-print">
+        <label>Oferta<div class="field"><select id="amSel"></select></div></label>
+        <label>Ver<div class="field"><select id="amView"><option value="y">Por años</option><option value="m">Mes a mes</option></select></div></label>
+        <button class="btn" type="button" id="csv">Descargar (CSV)</button>
+      </div>
+      <div class="scroll" style="max-height:420px;overflow-y:auto"><table id="amTbl"></table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Entiende los términos en 1 minuto</h2>
+    <details open>
+      <summary>¿Qué es el TIN?</summary>
+      <p>El <b>tipo de interés nominal</b>: el precio del dinero sin contar nada más. Con él se calcula la parte de intereses de cada cuota. Un TIN del 7 % anual son unos 0,58 % al mes sobre lo que aún debes.</p>
+    </details>
+    <details>
+      <summary>¿Qué es la TAE?</summary>
+      <p>La <b>tasa anual equivalente</b>: el coste del préstamo en un solo porcentaje anual, sumando al TIN las comisiones y los gastos obligatorios (apertura, estudio, seguros vinculados…). Sirve para comparar ofertas con condiciones distintas. Por eso un préstamo «al 0 %» con comisión de apertura no tiene una TAE del 0 %.</p>
+    </details>
+    <details>
+      <summary>¿Por qué no basta con mirar la TAE?</summary>
+      <p>Porque la TAE es un porcentaje <b>por año</b>. Un préstamo a 8 años con una TAE algo más baja puede costarte mucho más dinero que otro a 3 años, porque pagas intereses durante más tiempo. Mira siempre también el <b>coste total</b> en euros y que la cuota te quepa en el presupuesto.</p>
+    </details>
+    <details>
+      <summary>¿Por qué mi TAE no coincide con la del banco?</summary>
+      <p>Esta calculadora sigue las mismas hipótesis que el simulador del Banco de España: cuotas mensuales iguales (sistema francés), gastos iniciales pagados el día de la firma, primer pago al mes de firmar y meses de igual duración. Si la oferta tiene fechas, carencias o productos distintos, la TAE puede variar un poco. Si la diferencia es grande, pide al banco la <b>Información Normalizada Europea (INE)</b>, el documento oficial de la oferta, y revisa qué gastos incluye. <a href="https://clientebancario.bde.es/pcb/es/menu-horizontal/podemosayudarte/simuladores/calculo_tae_prestamo_personal.html" target="_blank" rel="noopener">Simulador de TAE del Banco de España</a></p>
+    </details>
+    <details>
+      <summary>Cómo se calcula</summary>
+      <ul class="note">
+        <li>Capital del préstamo = importe que pides (+ la comisión, si se suma al préstamo).</li>
+        <li>Cuota = C · i ÷ (1 − (1 + i)<sup>−n</sup>), con i = TIN ÷ 12 y n = número de meses. Con TIN 0 %, cuota = C ÷ n.</li>
+        <li>Dinero que recibes de verdad = importe − comisión pagada al firmar − otros gastos iniciales.</li>
+        <li>TAE: se busca el tipo mensual j que iguala lo que recibes con todos los pagos (cuota + seguros vinculados); TAE = (1 + j)<sup>12</sup> − 1.</li>
+        <li>Coste total del crédito = todo lo que pagas − lo que te prestan.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="card no-print">
+    <h2>¿La cuota te cabe en el presupuesto?</h2>
+    <p class="note">Apunta tus gastos del mes con la plantilla gratis de control de gastos (Excel y Google Sheets) y comprueba cuánto te queda libre antes de firmar.</p>
+    <a class="btn btn-primary" id="freeLink" href="https://payhip.com/b/M4f5s">Descargar la plantilla gratis</a>
+  </div>
+
+  <p class="note">Al abrir la página verás ofertas de ejemplo, no de ningún banco real: cámbialas por las tuyas. Es una herramienta para comparar y organizarte, no asesoramiento financiero. La oferta vinculante es la que figura en la INE de la entidad. Tus datos no salen de tu navegador.</p>
+
+  <footer>
+    <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal. Esta página no vende ni cobra nada ni tiene relación con ninguna entidad financiera. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
+    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio. Esta página no usa cookies.</p>
+  </footer>
+</main>
+
+<template id="tpl">
+  <div class="card offer">
+    <div class="offer-head">
+      <input data-k="nombre" aria-label="Nombre de la oferta" maxlength="40">
+      <button class="x no-print" type="button" data-del title="Quitar esta oferta" aria-label="Quitar esta oferta">×</button>
+    </div>
+    <div class="row2">
+      <label>Importe que pides<div class="field"><input data-k="importe" type="number" min="0" step="100"><span class="unit">€</span></div></label>
+      <label>Plazo<div class="field"><input data-k="plazo" type="number" min="1" max="480" step="1"><span class="unit">meses</span></div></label>
+    </div>
+    <div class="row2">
+      <label>TIN<div class="field"><input data-k="tin" type="number" min="0" step="0.01"><span class="unit">%</span></div></label>
+      <label>Comisión de apertura<div class="field"><input data-k="com" type="number" min="0" step="0.1"><span class="unit">%</span></div></label>
+    </div>
+    <label>¿Cómo se paga la comisión?
+      <div class="field"><select data-k="comModo">
+        <option value="firma">La descuentan al firmar (recibes menos)</option>
+        <option value="sumada">Se suma a lo que debes</option>
+      </select></div></label>
+    <div class="row2">
+      <label>Otros gastos iniciales<small>Estudio, notario…</small><div class="field"><input data-k="ini" type="number" min="0" step="1"><span class="unit">€</span></div></label>
+      <label>Seguros vinculados<small>Obligatorios para darte el préstamo</small><div class="field"><input data-k="seg" type="number" min="0" step="0.5"><span class="unit">€/mes</span></div></label>
+    </div>
+    <label>TAE que anuncia la entidad<small>Opcional: para comprobarla</small><div class="field"><input data-k="taeAnun" type="number" min="0" step="0.01" placeholder="—"><span class="unit">%</span></div></label>
+  </div>
+</template>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "mf-comparador-tae-v1";
+  var COLORS = ["#c9a227", "#2f6f8f", "#7a5c99"];
+  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var p2 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var $ = function (id) { return document.getElementById(id); };
+
+  var DEFAULT = [
+    { nombre: "Oferta A", importe: 12000, plazo: 60, tin: 6.95, com: 2, comModo: "firma", ini: 0, seg: 0, taeAnun: "" },
+    { nombre: "Oferta B", importe: 12000, plazo: 60, tin: 5.95, com: 0, comModo: "firma", ini: 0, seg: 15, taeAnun: "" }
+  ];
+  var EJ0 = [
+    { nombre: "Al contado", importe: 1200, plazo: 1, tin: 0, com: 0, comModo: "firma", ini: 0, seg: 0, taeAnun: "" },
+    { nombre: "Al 0 % con comisión", importe: 1200, plazo: 12, tin: 0, com: 3, comModo: "sumada", ini: 0, seg: 0, taeAnun: "" }
+  ];
+  var EJPLAZO = [
+    { nombre: "3 años", importe: 15000, plazo: 36, tin: 7.5, com: 1, comModo: "firma", ini: 0, seg: 0, taeAnun: "" },
+    { nombre: "8 años, TIN más bajo", importe: 15000, plazo: 96, tin: 6.9, com: 1, comModo: "firma", ini: 0, seg: 0, taeAnun: "" }
+  ];
+  var offers = clone(DEFAULT);
+
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
+  function num(v) { var x = parseFloat(String(v).replace(",", ".")); return isFinite(x) && x > 0 ? x : 0; }
+
+  function cuota(C, tin, n) {
+    if (n <= 0 || C <= 0) return 0;
+    var i = tin / 1200;
+    return i === 0 ? C / n : C * i / (1 - Math.pow(1 + i, -n));
+  }
+  function pv(m, j, n) { return Math.abs(j) < 1e-12 ? m * n : m * (1 - Math.pow(1 + j, -n)) / j; }
+  function tae(recibido, pago, n) {
+    if (recibido <= 0 || pago <= 0 || n <= 0) return NaN;
+    var lo = -0.5, hi = 1;
+    if (pv(pago, hi, n) > recibido) return NaN;
+    for (var k = 0; k < 200; k++) {
+      var mid = (lo + hi) / 2;
+      if (pv(pago, mid, n) > recibido) lo = mid; else hi = mid;
+    }
+    return (Math.pow(1 + (lo + hi) / 2, 12) - 1) * 100;
+  }
+
+  function compute(o) {
+    var imp = num(o.importe), n = Math.round(num(o.plazo)), tin = num(o.tin);
+    var com = imp * num(o.com) / 100, ini = num(o.ini), seg = num(o.seg);
+    var C = imp + (o.comModo === "sumada" ? com : 0);
+    var q = cuota(C, tin, n);
+    var intereses = q * n - C;
+    var recibido = imp - (o.comModo === "firma" ? com : 0) - ini;
+    var pagoMes = q + seg;
+    var totalPagado = q * n + seg * n + (o.comModo === "firma" ? com : 0) + ini;
+    var r = {
+      imp: imp, n: n, tin: tin, C: C, q: q, pagoMes: pagoMes, intereses: intereses, com: com, ini: ini,
+      vinc: seg * n, totalPagado: totalPagado, coste: totalPagado - imp, recibido: recibido,
+      tae: tae(recibido, pagoMes, n), taeAnun: num(o.taeAnun)
+    };
+    return r;
+  }
+
+  function schedule(o) {
+    var r = compute(o), i = r.tin / 1200, saldo = r.C, rows = [];
+    for (var k = 1; k <= r.n; k++) {
+      var int = saldo * i, cap = r.q - int;
+      if (k === r.n) cap = saldo;
+      saldo = Math.max(0, saldo - cap);
+      rows.push({ mes: k, cuota: cap + int, int: int, cap: cap, seg: num(o.seg), saldo: saldo });
+    }
+    return rows;
+  }
+
+  function render() {
+    var box = $("offers"); box.innerHTML = "";
+    offers.forEach(function (o, idx) {
+      var node = $("tpl").content.firstElementChild.cloneNode(true);
+      node.style.setProperty("--oc", COLORS[idx]);
+      node.querySelectorAll("[data-k]").forEach(function (el) {
+        el.value = o[el.dataset.k];
+        el.addEventListener("input", function () { o[el.dataset.k] = el.value; update(); });
+        el.addEventListener("change", function () { o[el.dataset.k] = el.value; update(); });
+      });
+      var del = node.querySelector("[data-del]");
+      del.hidden = offers.length <= 1;
+      del.addEventListener("click", function () { offers.splice(idx, 1); render(); });
+      box.appendChild(node);
+    });
+    $("add").disabled = offers.length >= 3;
+    fillSelect("plazoSel"); fillSelect("amSel");
+    update();
+  }
+
+  function fillSelect(id) {
+    var sel = $(id), prev = sel.value;
+    sel.innerHTML = offers.map(function (o, i) { return '<option value="' + i + '">' + esc(o.nombre || "Oferta " + (i + 1)) + "</option>"; }).join("");
+    if (prev && +prev < offers.length) sel.value = prev;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function update() {
+    var R = offers.map(compute);
+    var names = offers.map(function (o, i) { return '<span class="dot" style="--oc:' + COLORS[i] + '"></span>' + esc(o.nombre || "Oferta " + (i + 1)); });
+    var valid = R.map(function (r) { return r.imp > 0 && r.n > 0; });
+
+    var minCoste = Infinity, minTae = Infinity;
+    R.forEach(function (r, i) { if (valid[i]) { minCoste = Math.min(minCoste, r.coste); if (isFinite(r.tae)) minTae = Math.min(minTae, r.tae); } });
+    function mark(v, best, cond) { return cond && Math.abs(v - best) < 0.005 && R.length > 1 ? ' class="win"' : ""; }
+
+    var rows = [
+      ["Lo que pides", function (r) { return eur0.format(r.imp); }],
+      ["Lo que recibes de verdad", function (r) { return eur0.format(r.recibido); }],
+      ["Plazo", function (r) { return r.n + " meses" + (r.n >= 12 ? " (" + p2.format(r.n / 12).replace(",00", "") + " años)" : ""); }],
+      ["Cuota del préstamo", function (r) { return eur2.format(r.q); }],
+      ["Pago al mes con seguros", function (r) { return eur2.format(r.pagoMes); }, true],
+      ["Intereses", function (r) { return eur0.format(r.intereses); }],
+      ["Comisiones y gastos iniciales", function (r) { return eur0.format(r.com + r.ini); }],
+      ["Seguros vinculados", function (r) { return eur0.format(r.vinc); }],
+      ["Total que pagas", function (r) { return eur0.format(r.totalPagado); }],
+      ["Coste total del crédito", function (r, i) { return "<span" + mark(r.coste, minCoste, valid[i]) + ">" + eur0.format(r.coste) + "</span>"; }, true],
+      ["TIN", function (r) { return p2.format(r.tin) + " %"; }],
+      ["TAE calculada", function (r, i) { return isFinite(r.tae) ? "<span" + mark(r.tae, minTae, valid[i]) + ">" + p2.format(r.tae) + " %</span>" : "—"; }, true],
+      ["TAE anunciada", function (r) {
+        if (!r.taeAnun) return '<span class="note">—</span>';
+        var d = isFinite(r.tae) ? r.tae - r.taeAnun : 0;
+        return p2.format(r.taeAnun) + " %" + (Math.abs(d) >= 0.15 ? ' <span class="warn">(' + (d > 0 ? "+" : "") + p2.format(d) + ")</span>" : "");
+      }]
+    ];
+    var html = "<thead><tr><th></th>" + names.map(function (n) { return "<th>" + n + "</th>"; }).join("") + "</tr></thead><tbody>";
+    rows.forEach(function (row) {
+      html += '<tr' + (row[2] ? ' class="key"' : "") + "><td>" + row[0] + "</td>" + R.map(function (r, i) { return "<td>" + (valid[i] ? row[1](r, i) : "—") + "</td>"; }).join("") + "</tr>";
+    });
+    $("cmp").innerHTML = html + "</tbody>";
+
+    // Veredicto
+    var v = "";
+    var ok = R.map(function (r, i) { return { r: r, i: i }; }).filter(function (x) { return valid[x.i]; });
+    if (ok.length >= 2) {
+      var sameImp = ok.every(function (x) { return Math.abs(x.r.imp - ok[0].r.imp) < 0.5; });
+      var byCost = ok.slice().sort(function (a, b) { return a.r.coste - b.r.coste; });
+      var byTae = ok.filter(function (x) { return isFinite(x.r.tae); }).sort(function (a, b) { return a.r.tae - b.r.tae; });
+      var nm = function (x) { return "<b>" + esc(offers[x.i].nombre || "Oferta " + (x.i + 1)) + "</b>"; };
+      if (sameImp) {
+        v = nm(byCost[0]) + " es la más barata: te ahorras <b>" + eur0.format(byCost[byCost.length - 1].r.coste - byCost[0].r.coste) + "</b> frente a la más cara.";
+        if (byTae.length && byTae[0].i !== byCost[0].i) v += " Ojo: la TAE más baja es la de " + nm(byTae[0]) + ", pero como dura más, acabas pagando más en total.";
+      } else if (byTae.length) {
+        v = "Piden importes distintos, así que compara por TAE: la más baja es " + nm(byTae[0]) + " (" + p2.format(byTae[0].r.tae) + " %).";
+      }
+    } else if (ok.length === 1) {
+      var r0 = ok[0].r;
+      v = "Por cada 100 € que te prestan devuelves " + eur2.format(r0.totalPagado / r0.imp * 100) + ". Añade otra oferta para compararla.";
+    }
+    $("verdict").innerHTML = v;
+
+    // Barras apiladas
+    var maxT = Math.max.apply(null, R.map(function (r) { return r.totalPagado; }).concat([1]));
+    $("stack").innerHTML = R.map(function (r, i) {
+      if (!valid[i]) return "";
+      var w = function (x) { return (Math.max(0, x) / maxT * 100).toFixed(2) + "%"; };
+      return '<div class="srow"><span>' + names[i] + '</span><div class="strack">' +
+        '<span style="width:' + w(r.imp) + ';background:var(--cap)" title="Lo que te prestan"></span>' +
+        '<span style="width:' + w(r.intereses) + ';background:var(--int)" title="Intereses"></span>' +
+        '<span style="width:' + w(r.com + r.ini) + ';background:var(--com)" title="Comisiones"></span>' +
+        '<span style="width:' + w(r.vinc) + ';background:var(--vin)" title="Seguros"></span>' +
+        '</div><span class="v">' + eur0.format(r.totalPagado) + "</span></div>";
+    }).join("");
+
+    // Avisos
+    var w = [];
+    R.forEach(function (r, i) {
+      var nm = esc(offers[i].nombre || "Oferta " + (i + 1));
+      if (!valid[i]) return;
+      if (r.tin === 0 && (r.com + r.ini + r.vinc) > 0) w.push("«" + nm + "» anuncia 0 % de interés, pero con comisiones y gastos su TAE real es del " + p2.format(r.tae) + " %.");
+      if (r.taeAnun && isFinite(r.tae) && Math.abs(r.tae - r.taeAnun) >= 0.15) w.push("En «" + nm + "» la TAE calculada no coincide con la anunciada: revisa en la INE qué gastos incluye la entidad.");
+      if (r.vinc > 0) w.push("En «" + nm + "» los seguros vinculados suman " + eur0.format(r.vinc) + ": pregunta si puedes contratarlos fuera o cancelarlos y cómo cambia el tipo.");
+    });
+    $("warns").innerHTML = w.join("<br>");
+
+    plazoTable(); amTable(); save();
+  }
+
+  function plazoTable() {
+    var i = +$("plazoSel").value || 0, o = offers[i]; if (!o) return;
+    var base = Math.round(num(o.plazo));
+    var list = [12, 24, 36, 48, 60, 72, 84, 96, 120];
+    if (list.indexOf(base) < 0 && base > 0) list.push(base);
+    list.sort(function (a, b) { return a - b; });
+    var html = "<thead><tr><th>Plazo</th><th>Pago al mes</th><th>Coste total</th><th>TAE</th></tr></thead><tbody>";
+    list.forEach(function (n) {
+      var r = compute(Object.assign({}, o, { plazo: n }));
+      html += "<tr" + (n === base ? ' class="key"' : "") + "><td>" + n + " meses</td><td>" + eur2.format(r.pagoMes) + "</td><td>" + eur0.format(r.coste) + "</td><td>" + (isFinite(r.tae) ? p2.format(r.tae) + " %" : "—") + "</td></tr>";
+    });
+    $("plazoTbl").innerHTML = html + "</tbody>";
+  }
+
+  function amRows() {
+    var i = +$("amSel").value || 0, o = offers[i]; if (!o) return [];
+    var rows = schedule(o);
+    if ($("amView").value === "m") return rows.map(function (r) { return [r.mes, r.cuota, r.int, r.cap, r.seg, r.saldo]; });
+    var out = [];
+    rows.forEach(function (r) {
+      var y = Math.ceil(r.mes / 12);
+      if (!out[y - 1]) out[y - 1] = [y, 0, 0, 0, 0, 0];
+      var a = out[y - 1]; a[1] += r.cuota; a[2] += r.int; a[3] += r.cap; a[4] += r.seg; a[5] = r.saldo;
+    });
+    return out;
+  }
+  function amTable() {
+    var rows = amRows(), m = $("amView").value === "m";
+    var html = "<thead><tr><th>" + (m ? "Mes" : "Año") + "</th><th>Cuota</th><th>Intereses</th><th>Capital</th><th>Seguros</th><th>Pendiente</th></tr></thead><tbody>";
+    rows.forEach(function (r) {
+      html += "<tr><td>" + r[0] + "</td><td>" + eur2.format(r[1]) + "</td><td>" + eur2.format(r[2]) + "</td><td>" + eur2.format(r[3]) + "</td><td>" + eur2.format(r[4]) + "</td><td>" + eur2.format(r[5]) + "</td></tr>";
+    });
+    $("amTbl").innerHTML = html + "</tbody>";
+  }
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(offers)); } catch (e) {} }
+  function load() {
+    try {
+      var o = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (Array.isArray(o) && o.length >= 1 && o.length <= 3) offers = o;
+    } catch (e) {}
+  }
+
+  $("add").addEventListener("click", function () {
+    if (offers.length >= 3) return;
+    var last = offers[offers.length - 1] || DEFAULT[0];
+    var o = clone(last); o.nombre = "Oferta " + String.fromCharCode(65 + offers.length); o.taeAnun = "";
+    offers.push(o); render();
+  });
+  $("ej0").addEventListener("click", function () { offers = clone(EJ0); render(); });
+  $("ejPlazo").addEventListener("click", function () { offers = clone(EJPLAZO); render(); });
+  $("reset").addEventListener("click", function () { offers = clone(DEFAULT); render(); });
+  $("plazoSel").addEventListener("change", plazoTable);
+  $("amSel").addEventListener("change", amTable);
+  $("amView").addEventListener("change", amTable);
+  $("csv").addEventListener("click", function () {
+    var f = function (x) { return (+x).toFixed(2).replace(".", ","); };
+    var m = $("amView").value === "m";
+    var lines = [(m ? "Mes" : "Año") + ";Cuota;Intereses;Capital;Seguros;Pendiente"].concat(amRows().map(function (r) {
+      return r[0] + ";" + f(r[1]) + ";" + f(r[2]) + ";" + f(r[3]) + ";" + f(r[4]) + ";" + f(r[5]);
+    }));
+    var blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cuadro-amortizacion.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  var src = new URLSearchParams(location.search).get("utm_source") || "directo";
+  var fl = new URL($("freeLink").href); fl.searchParams.set("utm_source", src); fl.searchParams.set("utm_campaign", "comparador-tae");
+  $("freeLink").href = fl.toString();
+
+  load(); render();
+})();
+</script>
+</body>
+</html>
