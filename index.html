@@ -3,120 +3,290 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Control de gastos gratis · Moneda Financiera</title>
-<meta name="description" content="Plantilla gratuita para controlar tus gastos del mes en Excel o Google Sheets. En español y sin registros raros.">
+<title>Herramientas de dinero gratis · Moneda Financiera</title>
+<meta name="description" content="Calculadoras y plantillas gratis en español: control de gastos, coste real del coche, comparador de préstamos TIN/TAE, registro de suscripciones y planificador de la Renta.">
 <style>
   :root {
     --bg: #fffdf6; --ink: #2b2410; --muted: #6b6250; --gold: #c9a227; --gold-dark: #8a6d0f;
-    --card: #ffffff; --line: #ece3c6; --ok: #2e7d32;
+    --card: #ffffff; --line: #ece3c6; --ok: #2e7d32; --soft: #f7f0da; --hero: #fff4cf;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #17140c; --ink: #f4ecd4; --muted: #b8ad90; --card: #221d10; --line: #3a3220; --gold-dark: #e2c25a; }
+    :root:not([data-theme="light"]) { --bg: #17140c; --ink: #f4ecd4; --muted: #b8ad90; --card: #221d10; --line: #3a3220; --gold-dark: #e2c25a; --soft: #2a2414; --hero: #251f10; --ok: #6cc070; }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 48px; }
-  .brand { font-weight: 700; color: var(--gold-dark); letter-spacing: .02em; font-size: 14px; text-transform: uppercase; }
-  h1 { font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 8px 0 12px; }
-  h2 { font-size: 22px; margin: 40px 0 12px; }
-  p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
-  .btn { display: inline-block; padding: 14px 22px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 2px solid var(--gold); cursor: pointer; font-size: 17px; }
+  a { color: var(--gold-dark); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  /* barra superior */
+  .top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 56px; }
+  .brand { font-weight: 800; color: var(--gold-dark); letter-spacing: .02em; font-size: 15px; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+  .brand span { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--gold); vertical-align: -5px; margin-right: 6px; box-shadow: inset 0 0 0 3px #e9cf6b; }
+  nav { display: flex; gap: 16px; font-size: 15px; }
+  nav a { color: var(--ink); text-decoration: none; font-weight: 600; }
+  nav a:hover { color: var(--gold-dark); }
+  @media (max-width: 600px) { nav .opt { display: none; } }
+  /* portada */
+  .hero { background: var(--hero); border-bottom: 1px solid var(--line); }
+  .hero .wrap { padding: 44px 16px 36px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+  @media (max-width: 820px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-top: 28px; } }
+  h1 { font-size: clamp(30px, 6vw, 46px); line-height: 1.1; margin: 0 0 14px; }
+  .lead { font-size: 19px; color: var(--muted); margin: 0 0 22px; }
+  .btn { display: inline-block; padding: 13px 20px; border-radius: 11px; font-weight: 700; text-decoration: none; border: 2px solid var(--gold); cursor: pointer; font-size: 16px; font-family: inherit; }
   .btn-primary { background: var(--gold); color: #1d1704; }
   .btn-secondary { background: transparent; color: var(--ink); }
-  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin: 16px 0; }
-  ul.check { list-style: none; padding: 0; margin: 0; }
-  ul.check li { padding: 6px 0 6px 28px; position: relative; }
-  ul.check li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 700; }
+  .btn:focus-visible, .chip:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .trust { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 20px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--muted); }
+  .trust li::before { content: "✓ "; color: var(--ok); font-weight: 800; }
+  .preview { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(60, 45, 5, .08); }
+  .preview .row { display: flex; justify-content: space-between; align-items: center; font-size: 15px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+  .preview .row:last-child { border: 0; }
+  .preview .big { font-size: 34px; font-weight: 800; margin: 2px 0 8px; }
+  .meter { height: 10px; background: var(--soft); border-radius: 6px; overflow: hidden; margin: 6px 0 4px; }
+  .meter i { display: block; height: 100%; background: var(--gold); border-radius: 6px; }
+  /* secciones */
+  section { padding: 40px 0 8px; scroll-margin-top: 60px; }
+  h2 { font-size: clamp(24px, 4vw, 30px); margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+  .chip { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); padding: 8px 14px; border-radius: 999px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #1d1704; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .tool { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; color: var(--ink); text-decoration: none; transition: transform .15s, border-color .15s, box-shadow .15s; }
+  .tool:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: 0 8px 22px rgba(60, 45, 5, .08); }
+  .tool[hidden] { display: none; }
+  .ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 25px; background: var(--soft); margin-bottom: 10px; }
+  .tool h3 { margin: 0 0 6px; font-size: 19px; line-height: 1.25; }
+  .tool p { margin: 0 0 12px; color: var(--muted); font-size: 15px; flex: 1; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag { font-size: 12.5px; background: var(--soft); border-radius: 999px; padding: 2px 10px; color: var(--ink); }
+  .tag.new { background: var(--gold); color: #1d1704; font-weight: 700; }
+  .go { font-weight: 700; color: var(--gold-dark); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  /* calculadora rápida */
+  .quick { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: center; }
+  @media (max-width: 760px) { .quick { grid-template-columns: minmax(0, 1fr); } }
+  label { display: block; font-weight: 600; font-size: 15px; margin: 12px 0 4px; }
+  .field { position: relative; }
+  input[type=number] { width: 100%; padding: 11px 50px 11px 12px; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  .field .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+  input[type=range] { width: 100%; accent-color: var(--gold); }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .presets button { font: inherit; font-size: 13.5px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+  .res { text-align: center; }
+  .res .big { font-size: clamp(38px, 8vw, 54px); font-weight: 800; line-height: 1.05; }
+  .res .kp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+  .res .kp div { background: var(--soft); border-radius: 10px; padding: 10px 6px; }
+  .res .kp b { display: block; font-size: 18px; }
+  .res .kp span { font-size: 12.5px; color: var(--muted); }
+  /* pasos */
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; counter-reset: s; }
+  @media (max-width: 760px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--gold); color: #1d1704; font-weight: 800; margin-bottom: 8px; }
+  .step h3 { margin: 0 0 4px; font-size: 17px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  ul.check { list-style: none; padding: 0; margin: 0 0 12px; }
+  ul.check li { padding: 5px 0 5px 28px; position: relative; }
+  ul.check li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 800; }
   .price { font-size: 28px; font-weight: 800; }
-  .tag { display: inline-block; font-size: 13px; background: var(--line); border-radius: 999px; padding: 2px 10px; margin-bottom: 8px; }
   .small { font-size: 14px; color: var(--muted); }
-  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; font-size: 13px; color: var(--muted); }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 0 0 8px; }
+  summary { cursor: pointer; font-weight: 700; }
+  details p { margin: 8px 0 2px; color: var(--muted); }
+  .yt { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding: 18px 0 36px; font-size: 13px; color: var(--muted); }
   footer a { color: var(--muted); }
-  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-  .tools .card { margin: 0; }
-  a.tool { display: block; color: var(--ink); text-decoration: none; }
-  a.tool:hover, a.tool:focus-visible { border-color: var(--gold); }
-  a.tool h3 { margin: 4px 0 6px; font-size: 18px; }
-  a.tool p { margin: 0; }
   #notice { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: var(--line); }
 </style>
 </head>
 <body>
-<main>
-  <div class="brand">Moneda Financiera</div>
-  <h1>¿A final de mes no sabes en qué se te fue el dinero?</h1>
-  <p class="lead">Descarga gratis la plantilla de <strong>control de gastos del mes</strong>: apuntas cada gasto en 10 segundos y ves al instante cuánto te queda y en qué categoría se te va más.</p>
-  <a class="btn btn-primary" data-link="free" href="#">Descargar la plantilla gratis</a>
-  <p class="small">Para Excel y Google Sheets. Solo te pedimos el email para enviártela.</p>
-
-  <div class="card">
-    <ul class="check">
-      <li>12 categorías pensadas para un hogar en España (puedes cambiarlas)</li>
-      <li>Calcula sola el total gastado, lo que te queda y el porcentaje por categoría</li>
-      <li>Gráfico automático de "¿en qué se va el dinero?"</li>
-      <li>Sin macros, sin apps y sin suscripciones</li>
-    </ul>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><span aria-hidden="true"></span>Moneda Financiera</a>
+    <nav aria-label="Secciones">
+      <a href="#herramientas">Herramientas</a>
+      <a class="opt" href="#prueba">Prueba rápida</a>
+      <a class="opt" href="#dudas">Dudas</a>
+    </nav>
   </div>
+</header>
 
-  <h2>Más herramientas gratis</h2>
-  <div class="tools">
-    <a class="card tool" href="coste-coche.html">
-      <span class="tag">Calculadora online</span>
-      <h3>¿Cuánto te cuesta de verdad tu coche?</h3>
-      <p class="small">Pérdida de valor, financiación, combustible, seguro, ITV, taller y aparcamiento: al mes, al día y por kilómetro.</p>
-    </a>
-    <a class="card tool" href="comparador-tae.html">
-      <span class="tag">Calculadora online</span>
-      <h3>Comparador de préstamos TIN/TAE</h3>
-      <p class="small">Compara hasta 3 ofertas: cuota, intereses, comisiones, coste total y la TAE real.</p>
-    </a>
-    <a class="card tool" href="descargas/Registro-de-suscripciones.xlsx" download data-dl="suscripciones">
-      <span class="tag">Excel · Google Sheets</span>
-      <h3>Registro de suscripciones</h3>
-      <p class="small">Todo lo que pagas cada mes, cuánto suma al año, cuándo se renueva cada una y cuáles sobran.</p>
-    </a>
-    <a class="card tool" href="descargas/Planificador-Renta.xlsx" download data-dl="renta">
-      <span class="tag">Excel · Google Sheets</span>
-      <h3>Planificador de la Renta</h3>
-      <p class="small">Fechas clave, lista de documentos, pasos en orden y cálculo del pago en dos plazos.</p>
-    </a>
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Herramientas gratis para que tu dinero no se escape</h1>
+      <p class="lead">Calculadoras y plantillas en español para saber en qué se te va el dinero, cuánto te cuesta de verdad el coche, qué préstamo es más barato y qué pagas en suscripciones.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#herramientas">Ver las herramientas</a>
+        <a class="btn btn-secondary" data-link="free" href="#">Plantilla de gastos gratis</a>
+      </div>
+      <ul class="trust">
+        <li>Gratis</li>
+        <li>Calculadoras sin registro</li>
+        <li>Tus datos no salen de tu navegador</li>
+        <li>Pensadas para España</li>
+      </ul>
+    </div>
+    <div class="preview" aria-label="Ejemplo de resultado de la calculadora del coche">
+      <div class="small">Ejemplo con la calculadora del coche</div>
+      <div class="big">353 €/mes</div>
+      <div class="row"><span>Pérdida de valor</span><b>153 €</b></div>
+      <div class="meter"><i style="width:100%"></i></div>
+      <div class="row"><span>Gasolina</span><b>101 €</b></div>
+      <div class="meter"><i style="width:66%"></i></div>
+      <div class="row"><span>Seguro, taller, ITV y resto</span><b>100 €</b></div>
+      <div class="meter"><i style="width:65%"></i></div>
+      <div class="small" style="margin-top:8px">Coche de 20.000 € durante 6 años y 12.000 km al año (datos de ejemplo). <a href="coste-coche.html" class="toolLink">Calcula el tuyo →</a></div>
+    </div>
   </div>
+</div>
 
-  <h2>¿Quieres ir un paso más allá?</h2>
-  <div class="card">
-    <span class="tag">Próximamente</span>
-    <h3 style="margin:0 0 8px">Kit Presupuesto Familiar</h3>
-    <ul class="check">
-      <li>Resumen de los 12 meses: presupuesto frente a gasto real por categoría</li>
-      <li>Regla 50/30/20 con tus números reales</li>
-      <li>Calculadora de fondo de emergencia: cuánto necesitas y en cuántos meses llegas</li>
-      <li>Plan de deudas (bola de nieve o avalancha) con estimación de plazos e intereses</li>
-      <li>Metas de ahorro: cuánto apartar cada mes para llegar a tiempo</li>
-    </ul>
-    <p><span class="price">6,99 €</span> <span class="small">precio previsto de lanzamiento, pago único</span></p>
-    <a class="btn btn-secondary" data-link="waitlist" href="#">Avísame cuando salga</a>
-    <p class="small">No se cobra nada ahora. Solo te escribiremos cuando esté disponible.</p>
-  </div>
-  <div id="notice" role="status"></div>
+<main class="wrap">
+  <section id="herramientas">
+    <h2>¿Qué quieres hacer hoy?</h2>
+    <p class="sub">Elige y te enseñamos la herramienta que te sirve.</p>
+    <div class="chips" role="group" aria-label="Filtrar herramientas">
+      <button class="chip" type="button" data-f="todo" aria-pressed="true">Ver todo</button>
+      <button class="chip" type="button" data-f="ahorrar" aria-pressed="false">💰 Ahorrar cada mes</button>
+      <button class="chip" type="button" data-f="coche" aria-pressed="false">🚗 Tengo coche</button>
+      <button class="chip" type="button" data-f="prestamo" aria-pressed="false">🏦 Voy a pedir un préstamo</button>
+      <button class="chip" type="button" data-f="renta" aria-pressed="false">🧾 Hacer la Renta</button>
+    </div>
 
-  <p class="small">Las calculadoras funcionan en tu navegador: tus datos no se envían a ningún sitio. Herramientas de organización personal. No son asesoramiento financiero, fiscal ni de inversión.</p>
+    <div class="grid" id="tools">
+      <a class="tool" data-tags="ahorrar" data-link="free" href="#">
+        <div class="ico" aria-hidden="true">📊</div>
+        <div class="meta"><span class="tag">Excel · Google Sheets</span><span class="tag">10 s por gasto</span></div>
+        <h3>Control de gastos del mes</h3>
+        <p>Apuntas cada gasto y ves al momento cuánto te queda, cuánto puedes gastar al día y en qué categoría se te va más.</p>
+        <span class="go">Descargar gratis →</span>
+      </a>
+      <a class="tool toolLink" data-tags="coche ahorrar" href="coste-coche.html">
+        <div class="ico" aria-hidden="true">🚗</div>
+        <div class="meta"><span class="tag new">Nuevo</span><span class="tag">Calculadora online</span><span class="tag">2 min</span></div>
+        <h3>¿Cuánto te cuesta de verdad tu coche?</h3>
+        <p>Pérdida de valor, préstamo, gasolina, seguro, ITV, taller y aparcamiento: al mes, al día y por kilómetro.</p>
+        <span class="go">Abrir calculadora →</span>
+      </a>
+      <a class="tool toolLink" data-tags="prestamo coche" href="comparador-tae.html">
+        <div class="ico" aria-hidden="true">🏦</div>
+        <div class="meta"><span class="tag new">Nuevo</span><span class="tag">Calculadora online</span><span class="tag">2 min</span></div>
+        <h3>Comparador de préstamos TIN/TAE</h3>
+        <p>Compara hasta 3 ofertas: cuota, intereses, comisiones, coste total y la TAE real. Detecta el falso «0 %».</p>
+        <span class="go">Abrir comparador →</span>
+      </a>
+      <a class="tool" data-tags="ahorrar" href="descargas/Registro-de-suscripciones.xlsx" download>
+        <div class="ico" aria-hidden="true">📺</div>
+        <div class="meta"><span class="tag new">Nuevo</span><span class="tag">Excel · Google Sheets</span></div>
+        <h3>Registro de suscripciones</h3>
+        <p>Series, música, gimnasio, apps…: cuánto suman al año, cuándo se renueva cada una y cuáles sobran.</p>
+        <span class="go">Descargar gratis →</span>
+      </a>
+      <a class="tool" data-tags="renta" href="descargas/Planificador-Renta.xlsx" download>
+        <div class="ico" aria-hidden="true">🧾</div>
+        <div class="meta"><span class="tag new">Nuevo</span><span class="tag">Excel · Google Sheets</span></div>
+        <h3>Planificador de la Renta</h3>
+        <p>Fechas clave con los días que faltan, lista de documentos, pasos en orden y el pago en dos plazos.</p>
+        <span class="go">Descargar gratis →</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="prueba">
+    <h2>Prueba rápida: ¿cuánto se te va en «gastos hormiga»?</h2>
+    <p class="sub">El café, el snack, la app… Mueve la barra y mira lo que suma.</p>
+    <div class="card quick">
+      <div>
+        <label for="qDia">Lo que gastas en caprichos pequeños, por día</label>
+        <div class="field"><input id="qDia" type="number" min="0" step="0.5" value="3" inputmode="decimal"><span class="unit">€</span></div>
+        <div class="presets" aria-label="Ejemplos">
+          <button type="button" data-v="1.5">☕ Café 1,50 €</button>
+          <button type="button" data-v="3">🥐 Café y bollo 3 €</button>
+          <button type="button" data-v="6">🥤 Varios 6 €</button>
+        </div>
+        <label for="qDias">Días a la semana: <b id="qDiasTxt">5</b></label>
+        <input id="qDias" type="range" min="1" max="7" step="1" value="5">
+      </div>
+      <div class="res" aria-live="polite">
+        <div class="small">Al año se te van</div>
+        <div class="big" id="qAno">—</div>
+        <div class="kp">
+          <div><b id="qMes">—</b><span>al mes</span></div>
+          <div><b id="q5">—</b><span>en 5 años</span></div>
+          <div><b id="q10">—</b><span>en 10 años</span></div>
+        </div>
+        <p class="small" style="margin:0 0 12px">Sin contar intereses: es solo la suma de lo que gastas.</p>
+        <a class="btn btn-primary" data-link="free" href="#">Controla tus gastos gratis</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cómo funciona</h2>
+    <p class="sub">Sin cuentas, sin apps y sin letra pequeña.</p>
+    <div class="steps">
+      <div class="step"><h3>Elige la herramienta</h3><p>Según lo que quieras resolver: gastos, coche, préstamo, suscripciones o Renta.</p></div>
+      <div class="step"><h3>Pon tus números</h3><p>Vienen con un ejemplo para que veas cómo funciona. Cámbialo por tus datos.</p></div>
+      <div class="step"><h3>Decide con datos</h3><p>Verás el resultado al momento, con gráficos y explicación de cada cálculo.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>¿Quieres ir un paso más allá?</h2>
+    <div class="card">
+      <span class="tag">Próximamente</span>
+      <h3 style="margin:8px 0">Kit Presupuesto Familiar</h3>
+      <ul class="check">
+        <li>Resumen de los 12 meses: presupuesto frente a gasto real por categoría</li>
+        <li>Regla 50/30/20 con tus números reales</li>
+        <li>Calculadora de fondo de emergencia: cuánto necesitas y en cuántos meses llegas</li>
+        <li>Plan de deudas (bola de nieve o avalancha) con estimación de plazos e intereses</li>
+        <li>Metas de ahorro: cuánto apartar cada mes para llegar a tiempo</li>
+      </ul>
+      <p><span class="price">6,99 €</span> <span class="small">precio previsto de lanzamiento, pago único</span></p>
+      <a class="btn btn-secondary" data-link="waitlist" href="#">Avísame cuando salga</a>
+      <p class="small">No se cobra nada ahora. Solo te escribiremos cuando esté disponible.</p>
+    </div>
+    <div id="notice" role="status"></div>
+  </section>
+
+  <section id="dudas">
+    <h2>Dudas frecuentes</h2>
+    <details><summary>¿Es gratis de verdad?</summary><p>Sí. Las calculadoras y las plantillas son gratis. Para la plantilla de control de gastos solo te pedimos el email para enviártela.</p></details>
+    <details><summary>¿Guardáis lo que escribo en las calculadoras?</summary><p>No. Los cálculos se hacen en tu navegador y no se envían a ningún sitio. Solo se guardan en tu propio dispositivo para que no los pierdas al recargar.</p></details>
+    <details><summary>¿Funcionan las plantillas en Google Sheets o en el móvil?</summary><p>Sí: funcionan en Excel y en Google Sheets (súbelas a tu Drive y ábrelas). No llevan macros.</p></details>
+    <details><summary>¿Esto es asesoramiento financiero?</summary><p>No. Son herramientas para organizarte y hacer cuentas. Los resultados son estimaciones con los datos que pongas.</p></details>
+  </section>
+
+  <section>
+    <div class="card yt">
+      <div>
+        <h2 style="font-size:22px">Lo explicamos en vídeo</h2>
+        <p class="small" style="margin:0">Economía y reglas del juego explicadas desde cero, en menos de un minuto.</p>
+      </div>
+      <a class="btn btn-secondary" href="https://www.youtube.com/@Moneda.Financiera" target="_blank" rel="noopener">Ver el canal en YouTube</a>
+    </div>
+  </section>
 
   <footer>
-    <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal en fase de prueba: esta página no vende ni cobra nada. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
-    <p><strong>Privacidad.</strong> El email que facilites lo recogen Payhip (descarga gratuita) y Google Forms (aviso de lanzamiento), con la única finalidad de enviarte la plantilla y, si lo pides, avisarte del lanzamiento del kit. Puedes darte de baja en cualquier momento y ejercer tus derechos de acceso, rectificación y supresión escribiendo a <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>. Esta página no usa cookies propias.</p>
+    <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal en fase de prueba: esta página no vende ni cobra nada. Herramientas de organización personal: no son asesoramiento financiero, fiscal ni de inversión. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
+    <p><strong>Privacidad.</strong> El email que facilites lo recogen Payhip (descarga gratuita) y Google Forms (aviso de lanzamiento), con la única finalidad de enviarte la plantilla y, si lo pides, avisarte del lanzamiento del kit. Puedes darte de baja en cualquier momento y ejercer tus derechos de acceso, rectificación y supresión escribiendo a <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>. Las calculadoras funcionan en tu navegador y no envían tus datos. Esta página no usa cookies propias.</p>
   </footer>
 </main>
+
 <script>
-  // CONFIGURACIÓN: pega aquí los enlaces cuando existan (ver GUIA-PUESTA-EN-MARCHA.md).
+  // CONFIGURACIÓN: enlaces externos (ver GUIA-PUESTA-EN-MARCHA.md).
   const LINKS = {
-    free: "https://payhip.com/b/M4f5s",  // producto gratuito en Payhip (creado el 3 nov 2026, de momento invisible)
+    free: "https://payhip.com/b/M4f5s",  // producto gratuito en Payhip
     waitlist: "https://docs.google.com/forms/d/e/1FAIpQLSd1Jpdz6Q9r8DoY4tQnTAueGpIBC0Fbdh9_O4KFkO9MMJYbvw/viewform"  // Google Forms "Avísame"
   };
   const SOURCE = new URLSearchParams(location.search).get("utm_source") || "directo";
 
-  // Las calculadoras heredan el origen de la visita para medir de dónde llegan las descargas.
-  document.querySelectorAll('a.tool[href$=".html"]').forEach(function (a) {
+  // Las calculadoras heredan el origen de la visita para medir de dónde llegan.
+  document.querySelectorAll("a.toolLink").forEach(function (a) {
     a.href = a.getAttribute("href") + "?utm_source=" + encodeURIComponent(SOURCE);
   });
 
@@ -136,6 +306,38 @@
       });
     }
   });
+
+  // Filtro "¿Qué quieres hacer hoy?"
+  const chips = document.querySelectorAll(".chip");
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      chips.forEach(function (x) { x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+      const f = c.dataset.f;
+      document.querySelectorAll("#tools .tool").forEach(function (t) {
+        t.hidden = f !== "todo" && t.dataset.tags.split(" ").indexOf(f) < 0;
+      });
+    });
+  });
+
+  // Prueba rápida de gastos hormiga
+  const eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" });
+  const qDia = document.getElementById("qDia"), qDias = document.getElementById("qDias");
+  function quick() {
+    const d = Math.max(0, parseFloat(String(qDia.value).replace(",", ".")) || 0);
+    const n = +qDias.value;
+    const ano = d * n * 52;
+    document.getElementById("qDiasTxt").textContent = n;
+    document.getElementById("qAno").textContent = eur.format(ano);
+    document.getElementById("qMes").textContent = eur.format(ano / 12);
+    document.getElementById("q5").textContent = eur.format(ano * 5);
+    document.getElementById("q10").textContent = eur.format(ano * 10);
+  }
+  qDia.addEventListener("input", quick);
+  qDias.addEventListener("input", quick);
+  document.querySelectorAll(".presets button").forEach(function (b) {
+    b.addEventListener("click", function () { qDia.value = b.dataset.v; quick(); });
+  });
+  quick();
 </script>
 </body>
 </html>
