@@ -87,11 +87,29 @@
     .results { position: static; }
     body { background: #fff; color: #000; }
   }
+  .topnav { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; font-size: 14px; }
+  .topnav a:not(.brand) { display: inline-block; padding: 6px 0; }
+  .guide { max-width: 780px; margin: 32px 0 0; }
+  .guide h2 { font-size: 24px; margin: 0 0 10px; }
+  .guide h3 { font-size: 18px; margin: 24px 0 6px; }
+  .guide p, .guide li { margin: 0 0 8px; }
+  .guide .scroll { overflow-x: auto; }
+  .mbar { display: none; }
+  @media (max-width: 900px) {
+    .mbar:not([hidden]) { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--card); border-top: 2px solid var(--gold); }
+    body { padding-bottom: 72px; }
+  }
+  @media print { .mbar { display: none !important; } .topnav a:not(.brand), .guide { display: none; } body { padding-bottom: 0; } }
 </style>
 </head>
 <body>
 <main>
-  <a class="brand" href="./">Moneda Financiera</a>
+  <nav class="topnav" aria-label="Herramientas">
+    <a class="brand toolLink" href="./">Moneda Financiera</a>
+    <a class="toolLink" href="./">← Todas las herramientas</a>
+    <a class="toolLink" href="comparador-tae.html">Comparador de préstamos</a>
+    <a href="#guia">Guía rápida</a>
+  </nav>
   <h1>¿Cuánto te cuesta <em>de verdad</em> tu coche?</h1>
   <p class="lead">No es solo la gasolina. Suma la pérdida de valor, la financiación, el seguro, la ITV, los impuestos, el taller y el aparcamiento, y mira el resultado al año, al mes, al día y por kilómetro.</p>
 
@@ -231,7 +249,7 @@
       </div>
     </form>
 
-    <aside class="results" aria-live="polite">
+    <aside id="resultado" class="results" aria-live="polite">
       <div class="card">
         <span class="pill">Tu resultado</span>
         <div class="big" id="rMes">—</div>
@@ -304,20 +322,50 @@
     </details>
   </div>
 
+  <article class="guide" id="guia">
+    <h2>Guía rápida: cuánto cuesta mantener un coche</h2>
+    <p>Para saber lo que cuesta un coche no basta con mirar la gasolina. Hay que sumar tres tipos de gasto: lo que pierde de valor, lo que pagas aunque no lo muevas y lo que depende de los kilómetros.</p>
+    <h3>1. La pérdida de valor</h3>
+    <p>Es la diferencia entre lo que pagas por el coche y lo que te dan al venderlo. No llega ningún recibo, por eso se olvida. En el ejemplo de esta página, un coche de 20.000 € que se vende por 9.000 € a los 6 años pierde unos 1.833 € al año: el 43 % del coste total.</p>
+    <h3>2. Lo que pagas aunque esté parado</h3>
+    <p>Seguro, impuesto de circulación, ITV y plaza de aparcamiento. El seguro y el impuesto cambian según el coche, el conductor y el municipio: usa tus recibos, no una media.</p>
+    <h3>3. Lo que depende de los kilómetros</h3>
+    <p>Combustible o electricidad, neumáticos, peajes y parte del taller. Si conduces más, pagas más al mes, pero cada kilómetro sale más barato, porque repartes los gastos fijos. Así queda el ejemplo:</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Km al año</th><th>Al mes</th><th>Por km</th></tr></thead>
+      <tbody><tr><td>8.000 km</td><td>316 €</td><td>0,47 €</td></tr><tr><td>12.000 km</td><td>353 €</td><td>0,35 €</td></tr><tr><td>20.000 km</td><td>427 €</td><td>0,26 €</td></tr></tbody>
+    </table></div>
+    <p class="note">Calculado con los valores de ejemplo de la página, cambiando solo los kilómetros. En la realidad, hacer más kilómetros también suele bajar el precio de venta y subir el gasto de taller.</p>
+    <h3>De dónde sacar tus datos</h3>
+    <ul>
+      <li><b>Valor de venta:</b> mira anuncios de tu mismo modelo con la edad y los kilómetros que tendrá. Son precios de oferta; lo que te paguen puede ser menos.</li>
+      <li><b>Consumo real:</b> llena el depósito, apunta los km y, al volver a llenarlo, divide los litros entre los km recorridos y multiplica por 100.</li>
+      <li><b>Seguro, impuesto y taller:</b> suma los recibos de los últimos 12 meses.</li>
+    </ul>
+    <h3>Errores habituales</h3>
+    <ul>
+      <li>Sumar la cuota entera del préstamo y también la pérdida de valor: parte del precio del coche se cuenta dos veces. Aquí, del préstamo solo se suma el sobrecoste.</li>
+      <li>Olvidar los gastos que no llegan cada mes: neumáticos, ITV y averías.</li>
+      <li>Comparar dos coches solo por el precio de compra.</li>
+    </ul>
+    <p>¿Vas a financiarlo? <a class="toolLink" href="comparador-tae.html">Compara las ofertas en el comparador de préstamos</a>.</p>
+  </article>
+
   <p class="note">Los valores que aparecen al abrir la página son un ejemplo: cámbialos por los tuyos. El resultado es una estimación para organizarte, no asesoramiento financiero. Tus datos no salen de tu navegador.</p>
 
   <footer>
     <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal. Esta página no vende ni cobra nada. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
     <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos que escribes solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio, salvo el coste al mes y por km si tú decides compartirlo. Esta página no usa cookies.</p>
   </footer>
+  <div class="mbar no-print" id="mbar" hidden><span>Coste: <b id="mMes">—</b> al mes</span><a class="btn btn-primary" href="#resultado">Ver resultado</a></div>
 </main>
 
 <script>
 (function () {
   "use strict";
   var KEY = "mf-coste-coche-v1";
-  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", useGrouping: "always", maximumFractionDigits: 0 });
+  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", useGrouping: "always", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var pct1 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1 });
   var $ = function (id) { return document.getElementById(id); };
   var form = $("f");
@@ -407,6 +455,7 @@
     var total = items.reduce(function (s, it) { return s + it.v; }, 0);
 
     $("rMes").textContent = eur0.format(total / 12);
+    $("mMes").textContent = eur0.format(total / 12);
     $("rAno").textContent = eur0.format(total);
     $("rDia").textContent = eur2.format(total / 365);
     $("rKm").textContent = km > 0 ? eur2.format(total / km) : "—";
@@ -454,7 +503,7 @@
 
     var sinDepYFin = total - dep - finAnual - n("parking") * 12 - n("peajes") * 12;
     $("refTxt").innerHTML = "Tus gastos comparables con el RACE (sin pérdida de valor, financiación, aparcamiento ni peajes): <b>" +
-      eur0.format(sinDepYFin) + " al año</b>" + (km ? " con " + new Intl.NumberFormat("es-ES").format(km) + " km." : ".");
+      eur0.format(sinDepYFin) + " al año</b>" + (km ? " con " + new Intl.NumberFormat("es-ES", { useGrouping: "always" }).format(km) + " km." : ".");
 
     window.__rows = shown.map(function (it) { return [it.k, it.v, it.v / 12, total > 0 ? it.v / total * 100 : 0]; });
     window.__total = total;
@@ -522,7 +571,15 @@
   var fl = new URL($("freeLink").href); fl.searchParams.set("utm_source", src); fl.searchParams.set("utm_campaign", "calc-coche");
   $("freeLink").href = fl.toString();
 
-  load(); applyMotorLabels(); calc();
+  document.querySelectorAll("a.toolLink").forEach(function (a) {
+    a.href = a.getAttribute("href") + "?utm_source=" + encodeURIComponent(src);
+  });
+  // En el móvil, el resultado queda lejos del formulario: barra fija mientras no se ve.
+  function bar() { $("mbar").hidden = $("resultado").getBoundingClientRect().top < window.innerHeight - 120; }
+  window.addEventListener("scroll", bar, { passive: true });
+  window.addEventListener("resize", bar);
+
+  load(); applyMotorLabels(); calc(); bar();
 })();
 </script>
 </body>

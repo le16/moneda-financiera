@@ -82,11 +82,24 @@
   footer { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 16px; font-size: 13px; color: var(--muted); }
   footer a { color: var(--muted); }
   @media print { .no-print { display: none !important; } body { background: #fff; color: #000; } }
+  .topnav { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; font-size: 14px; }
+  .topnav a:not(.brand) { display: inline-block; padding: 6px 0; }
+  .guide { max-width: 780px; margin: 32px 0 0; }
+  .guide h2 { font-size: 24px; margin: 0 0 10px; }
+  .guide h3 { font-size: 18px; margin: 24px 0 6px; }
+  .guide p, .guide li { margin: 0 0 8px; }
+  .guide .scroll { overflow-x: auto; }
+  @media print { .topnav a:not(.brand), .guide { display: none; } }
 </style>
 </head>
 <body>
 <main>
-  <a class="brand" href="./">Moneda Financiera</a>
+  <nav class="topnav" aria-label="Herramientas">
+    <a class="brand toolLink" href="./">Moneda Financiera</a>
+    <a class="toolLink" href="./">← Todas las herramientas</a>
+    <a class="toolLink" href="coste-coche.html">Coste del coche</a>
+    <a href="#guia">Guía rápida</a>
+  </nav>
   <h1>Comparador de préstamos: TIN, TAE y lo que pagas de verdad</h1>
   <p class="lead">Mete hasta 3 ofertas (préstamo personal, financiación del coche, compra a plazos…) y mira la cuota, los intereses, las comisiones, el coste total y la <b>TAE real</b> calculada con todos los gastos.</p>
 
@@ -111,6 +124,14 @@
       <span><i style="background:var(--vin)"></i>Seguros y productos vinculados</span>
     </div>
     <p class="note" id="warns"></p>
+    <div id="shareBox" class="no-print" hidden>
+      <div class="btns">
+        <button class="btn btn-primary" type="button" id="share">Compartir comparación</button>
+        <a class="btn" id="shareWa" target="_blank" rel="noopener" href="https://wa.me/">WhatsApp</a>
+        <button class="btn" type="button" id="shareCopy">Copiar texto</button>
+      </div>
+      <p class="note" id="shareMsg" role="status"></p>
+    </div>
   </div>
 
   <div class="two">
@@ -168,11 +189,45 @@
     <a class="btn btn-primary" id="freeLink" href="https://payhip.com/b/M4f5s">Descargar la plantilla gratis</a>
   </div>
 
+  <article class="guide" id="guia">
+    <h2>Guía rápida: cómo comparar dos préstamos</h2>
+    <p>Una cuota baja no significa un préstamo barato. Para comparar bien, sigue este orden:</p>
+    <ol>
+      <li><b>Pide el mismo importe y el mismo plazo</b> en todas las ofertas.</li>
+      <li><b>Compara la TAE</b>, no solo el TIN: la TAE incluye las comisiones y los gastos obligatorios.</li>
+      <li><b>Mira el coste total en euros</b>: todo lo que pagas menos lo que te prestan.</li>
+      <li><b>Comprueba que la cuota te cabe</b> cada mes sin dejarte a cero.</li>
+    </ol>
+    <h3>Por qué importa el plazo</h3>
+    <p>El mismo préstamo de 15.000 € al 7,5 % TIN con un 1 % de apertura, cambiando solo los años:</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Plazo</th><th>Cuota</th><th>Coste total</th><th>TAE</th></tr></thead>
+      <tbody><tr><td>3 años</td><td>466,59 €</td><td>1.947 €</td><td>8,50 %</td></tr><tr><td>5 años</td><td>300,57 €</td><td>3.184 €</td><td>8,22 %</td></tr><tr><td>8 años</td><td>208,26 €</td><td>5.143 €</td><td>8,06 %</td></tr></tbody>
+    </table></div>
+    <p>A 8 años la cuota es mucho más baja y hasta la TAE baja un poco, porque la comisión se reparte en más tiempo. Pero pagas unos 3.196 € más que a 3 años.</p>
+    <p class="note">Ejemplo calculado con las mismas fórmulas que el comparador; no es la oferta de ningún banco.</p>
+    <h3>Qué buscar en los papeles</h3>
+    <p>En un préstamo personal, la entidad debe darte antes de firmar la <b>INE</b> (información normalizada europea). Busca estos datos y cópialos arriba:</p>
+    <ul>
+      <li>Importe total, plazo, TIN y TAE.</li>
+      <li>Comisión de apertura o estudio, y si se descuenta o se suma a la deuda.</li>
+      <li>Seguros o productos que te piden contratar: cuánto cuestan y qué pasa si no los quieres.</li>
+      <li>Qué cobran por devolver el dinero antes de tiempo.</li>
+    </ul>
+    <h3>Trampas habituales</h3>
+    <ul>
+      <li><b>«Al 0 %» con comisión:</b> el TIN es cero, pero la TAE no. Pruébalo con el botón de ejemplo de arriba.</li>
+      <li><b>Fijarte solo en la cuota:</b> se puede bajar alargando el plazo, y sale más caro.</li>
+      <li><b>TIN bajo con un seguro obligatorio:</b> añade el seguro y mira la TAE que sale.</li>
+    </ul>
+    <p>¿Es para un coche? <a class="toolLink" href="coste-coche.html">Calcula también lo que te costará al mes</a>.</p>
+  </article>
+
   <p class="note">Al abrir la página verás ofertas de ejemplo, no de ningún banco real: cámbialas por las tuyas. Es una herramienta para comparar y organizarte, no asesoramiento financiero. La oferta vinculante es la que figura en la INE de la entidad. Tus datos no salen de tu navegador.</p>
 
   <footer>
     <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal. Esta página no vende ni cobra nada ni tiene relación con ninguna entidad financiera. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
-    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio. Esta página no usa cookies.</p>
+    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio, salvo la diferencia en euros si tú decides compartirla. Esta página no usa cookies.</p>
   </footer>
 </main>
 
@@ -208,8 +263,8 @@
   "use strict";
   var KEY = "mf-comparador-tae-v1";
   var COLORS = ["#c9a227", "#2f6f8f", "#7a5c99"];
-  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var eur0 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", useGrouping: "always", maximumFractionDigits: 0 });
+  var eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", useGrouping: "always", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var p2 = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var $ = function (id) { return document.getElementById(id); };
 
@@ -337,7 +392,7 @@
     $("cmp").innerHTML = html + "</tbody>";
 
     // Veredicto
-    var v = "";
+    var v = "", dif = 0;
     var ok = R.map(function (r, i) { return { r: r, i: i }; }).filter(function (x) { return valid[x.i]; });
     if (ok.length >= 2) {
       var sameImp = ok.every(function (x) { return Math.abs(x.r.imp - ok[0].r.imp) < 0.5; });
@@ -345,6 +400,7 @@
       var byTae = ok.filter(function (x) { return isFinite(x.r.tae); }).sort(function (a, b) { return a.r.tae - b.r.tae; });
       var nm = function (x) { return "<b>" + esc(offers[x.i].nombre || "Oferta " + (x.i + 1)) + "</b>"; };
       if (sameImp) {
+        dif = byCost[byCost.length - 1].r.coste - byCost[0].r.coste;
         v = nm(byCost[0]) + " es la más barata: te ahorras <b>" + eur0.format(byCost[byCost.length - 1].r.coste - byCost[0].r.coste) + "</b> frente a la más cara.";
         if (byTae.length && byTae[0].i !== byCost[0].i) v += " Ojo: la TAE más baja es la de " + nm(byTae[0]) + ", pero como dura más, acabas pagando más en total.";
       } else if (byTae.length) {
@@ -355,6 +411,7 @@
       v = "Por cada 100 € que te prestan devuelves " + eur2.format(r0.totalPagado / r0.imp * 100) + ". Añade otra oferta para compararla.";
     }
     $("verdict").innerHTML = v;
+    updateShare(dif, ok.length);
 
     // Barras apiladas
     var maxT = Math.max.apply(null, R.map(function (r) { return r.totalPagado; }).concat([1]));
@@ -418,6 +475,31 @@
     $("amTbl").innerHTML = html + "</tbody>";
   }
 
+  var SHARE_URL = "https://le16.github.io/moneda-financiera/comparador-tae.html?utm_source=compartir";
+  var shareText = "";
+  var EJEMPLOS = [DEFAULT, EJ0, EJPLAZO].map(function (x) { return JSON.stringify(x); });
+  function updateShare(dif, n) {
+    $("shareBox").hidden = !(dif >= 0.5);
+    $("shareMsg").textContent = "Solo se comparte la diferencia en euros, no los datos de tus ofertas.";
+    var ejemplo = EJEMPLOS.indexOf(JSON.stringify(offers)) >= 0;
+    shareText = (ejemplo ? "En un ejemplo con " + n + " formas de financiar lo mismo hay " : "He comparado " + n + " ofertas por el mismo importe y hay ") +
+      eur0.format(dif) + " de diferencia entre la más barata y la más cara. Compara las tuyas gratis:";
+    $("shareWa").href = "https://wa.me/?text=" + encodeURIComponent(shareText + " " + SHARE_URL);
+  }
+  function copyShare() {
+    var t = shareText + " " + SHARE_URL;
+    var ok = function () { $("shareMsg").textContent = "Texto copiado. Ya puedes pegarlo donde quieras."; };
+    var mal = function () { $("shareMsg").textContent = "No se ha podido copiar. Cópialo a mano: " + t; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, mal); else mal();
+  }
+  $("shareCopy").addEventListener("click", copyShare);
+  $("share").addEventListener("click", function () {
+    if (!navigator.share) { copyShare(); return; }
+    navigator.share({ title: "Comparador de préstamos", text: shareText, url: SHARE_URL }).catch(function (e) {
+      if (!e || e.name !== "AbortError") copyShare();
+    });
+  });
+
   function save() { try { localStorage.setItem(KEY, JSON.stringify(offers)); } catch (e) {} }
   function load() {
     try {
@@ -452,6 +534,10 @@
   var src = new URLSearchParams(location.search).get("utm_source") || "directo";
   var fl = new URL($("freeLink").href); fl.searchParams.set("utm_source", src); fl.searchParams.set("utm_campaign", "comparador-tae");
   $("freeLink").href = fl.toString();
+
+  document.querySelectorAll("a.toolLink").forEach(function (a) {
+    a.href = a.getAttribute("href") + "?utm_source=" + encodeURIComponent(src);
+  });
 
   load(); render();
 })();
