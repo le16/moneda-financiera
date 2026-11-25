@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coste real del coche · Moneda Financiera</title>
 <meta name="description" content="Calculadora gratuita: cuánto te cuesta de verdad tu coche al año, al mes, al día y por kilómetro. Pérdida de valor, financiación, combustible, seguro, ITV, impuestos, mantenimiento y aparcamiento.">
+<!-- seo -->
+<link rel="canonical" href="https://le16.github.io/moneda-financiera/coste-coche.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Moneda Financiera">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="¿Cuánto te cuesta tu coche al mes? · Moneda Financiera">
+<meta property="og:description" content="Calculadora gratuita: cuánto te cuesta de verdad tu coche al año, al mes, al día y por kilómetro. Pérdida de valor, financiación, combustible, seguro, ITV, impuestos, mantenimiento y aparcamiento.">
+<meta property="og:url" content="https://le16.github.io/moneda-financiera/coste-coche.html">
+<meta property="og:image" content="https://le16.github.io/moneda-financiera/og-coche.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="¿Cuánto te cuesta tu coche al mes?">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Coste real del coche", "url": "https://le16.github.io/moneda-financiera/coste-coche.html", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "inLanguage": "es", "description": "Calculadora gratuita: cuánto te cuesta de verdad tu coche al año, al mes, al día y por kilómetro. Pérdida de valor, financiación, combustible, seguro, ITV, impuestos, mantenimiento y aparcamiento.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}</script>
+<!-- /seo -->
 <style>
   :root {
     --bg: #fffdf6; --ink: #2b2410; --muted: #6b6250; --gold: #c9a227; --gold-dark: #8a6d0f;
@@ -228,6 +243,12 @@
         </div>
         <p class="note" id="rTotal"></p>
         <p class="note" id="rSueldo"></p>
+        <div class="btns no-print">
+          <button class="btn btn-primary" type="button" id="share">Compartir mi resultado</button>
+          <a class="btn" id="shareWa" target="_blank" rel="noopener" href="https://wa.me/">WhatsApp</a>
+          <button class="btn" type="button" id="shareCopy">Copiar texto</button>
+        </div>
+        <p class="note no-print" id="shareMsg" role="status">Solo se comparte el coste al mes y por km, nunca el resto de tus datos.</p>
         <div class="bars" id="bars"></div>
       </div>
 
@@ -287,7 +308,7 @@
 
   <footer>
     <p><strong>Aviso legal.</strong> Moneda Financiera, proyecto personal. Esta página no vende ni cobra nada. Contacto: <a href="mailto:relojesle@gmail.com">relojesle@gmail.com</a>.</p>
-    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos que escribes solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio. Esta página no usa cookies.</p>
+    <p><strong>Privacidad.</strong> Los cálculos se hacen en tu navegador. Los datos que escribes solo se guardan en tu propio dispositivo para que no los pierdas al recargar; no se envían a ningún sitio, salvo el coste al mes y por km si tú decides compartirlo. Esta página no usa cookies.</p>
   </footer>
 </main>
 
@@ -437,7 +458,17 @@
 
     window.__rows = shown.map(function (it) { return [it.k, it.v, it.v / 12, total > 0 ? it.v / total * 100 : 0]; });
     window.__total = total;
+    updateShare(total, km);
     save();
+  }
+
+  var SHARE_URL = "https://le16.github.io/moneda-financiera/coste-coche.html?utm_source=compartir";
+  var shareText = "";
+  function updateShare(total, km) {
+    var ejemplo = inputs.every(function (el) { return (el.type === "checkbox" ? el.checked : el.value) === defaults[el.id]; });
+    shareText = (ejemplo ? "El coche de ejemplo cuesta " : "Mi coche me cuesta ") + eur0.format(total / 12) + " al mes" +
+      (km > 0 ? " (" + eur2.format(total / km) + " por km)" : "") + ", sumando gastos y pérdida de valor. ¿Y el tuyo? Calcúlalo gratis:";
+    $("shareWa").href = "https://wa.me/?text=" + encodeURIComponent(shareText + " " + SHARE_URL);
   }
 
   function save() {
@@ -462,6 +493,19 @@
   $("reset").addEventListener("click", function () {
     inputs.forEach(function (el) { if (el.type === "checkbox") el.checked = defaults[el.id]; else el.value = defaults[el.id]; });
     applyMotorLabels(); calc();
+  });
+  function copyShare() {
+    var t = shareText + " " + SHARE_URL;
+    var ok = function () { $("shareMsg").textContent = "Texto copiado. Ya puedes pegarlo donde quieras."; };
+    var mal = function () { $("shareMsg").textContent = "No se ha podido copiar. Cópialo a mano: " + t; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, mal); else mal();
+  }
+  $("shareCopy").addEventListener("click", copyShare);
+  $("share").addEventListener("click", function () {
+    if (!navigator.share) { copyShare(); return; }
+    navigator.share({ title: "Coste real del coche", text: shareText, url: SHARE_URL }).catch(function (e) {
+      if (!e || e.name !== "AbortError") copyShare();
+    });
   });
   $("csv").addEventListener("click", function () {
     var f = function (x) { return x.toFixed(2).replace(".", ","); };
